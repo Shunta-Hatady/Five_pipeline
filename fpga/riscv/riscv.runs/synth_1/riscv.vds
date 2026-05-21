@@ -1,0 +1,497 @@
+#-----------------------------------------------------------
+# Vivado v2022.2 (64-bit)
+# SW Build 3671981 on Fri Oct 14 04:59:54 MDT 2022
+# IP Build 3669848 on Fri Oct 14 08:30:02 MDT 2022
+# Start of session at: Thu May 21 18:13:13 2026
+# Process ID: 423022
+# Current directory: /st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.runs/synth_1
+# Command line: vivado -log riscv.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source riscv.tcl
+# Log file: /st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.runs/synth_1/riscv.vds
+# Journal file: /st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.runs/synth_1/vivado.jou
+# Running On: st145, OS: Linux, CPU Frequency: 2200.000 MHz, CPU Physical cores: 4, Host memory: 16453 MB
+#-----------------------------------------------------------
+source riscv.tcl -notrace
+Command: synth_design -top riscv -part xc7a100tcsg324-1
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7a100t'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7a100t'
+INFO: [Device 21-403] Loading part xc7a100tcsg324-1
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 4 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 423077
+INFO: [Synth 8-11241] undeclared symbol 'REGCCE', assumed default net type 'wire' [/opt/xilinx/Vivado/2022.2/data/verilog/src/unimacro/BRAM_SINGLE_MACRO.v:2170]
+WARNING: [Synth 8-6901] identifier 'EX_MEM_WB_MUX' is used before its declaration [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:257]
+WARNING: [Synth 8-6901] identifier 'EX_MEM_PC4' is used before its declaration [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:257]
+WARNING: [Synth 8-6901] identifier 'EX_MEM_ALU_RESULT' is used before its declaration [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:257]
+WARNING: [Synth 8-6901] identifier 'EX_MEM_D_RD' is used before its declaration [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:262]
+WARNING: [Synth 8-6901] identifier 'EX_MEM_D_RD' is used before its declaration [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:262]
+WARNING: [Synth 8-6901] identifier 'EX_MEM_WB_MUX' is used before its declaration [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:262]
+WARNING: [Synth 8-6901] identifier 'EX_MEM_IS_MUL' is used before its declaration [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:262]
+WARNING: [Synth 8-6901] identifier 'MEM_WB_D_RD' is used before its declaration [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:263]
+WARNING: [Synth 8-6901] identifier 'MEM_WB_D_RD' is used before its declaration [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:263]
+WARNING: [Synth 8-6901] identifier 'EX_MEM_D_RD' is used before its declaration [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:269]
+WARNING: [Synth 8-6901] identifier 'EX_MEM_D_RD' is used before its declaration [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:269]
+WARNING: [Synth 8-6901] identifier 'EX_MEM_WB_MUX' is used before its declaration [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:269]
+WARNING: [Synth 8-6901] identifier 'EX_MEM_IS_MUL' is used before its declaration [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:269]
+WARNING: [Synth 8-6901] identifier 'MEM_WB_D_RD' is used before its declaration [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:270]
+WARNING: [Synth 8-6901] identifier 'MEM_WB_D_RD' is used before its declaration [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:270]
+---------------------------------------------------------------------------------
+Starting RTL Elaboration : Time (s): cpu = 00:00:02 ; elapsed = 00:00:02 . Memory (MB): peak = 2438.789 ; gain = 371.770 ; free physical = 6281 ; free virtual = 11418
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1863.866; parent = 1651.381; children = 212.485
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3444.371; parent = 2441.762; children = 1002.609
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'riscv' [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:5]
+INFO: [Synth 8-3876] $readmem data file 'prog.mif' is read successfully [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:28]
+INFO: [Synth 8-155] case statement is not full and has no default [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:100]
+INFO: [Synth 8-155] case statement is not full and has no default [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:112]
+INFO: [Synth 8-155] case statement is not full and has no default [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:123]
+INFO: [Synth 8-155] case statement is not full and has no default [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:92]
+INFO: [Synth 8-155] case statement is not full and has no default [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:174]
+INFO: [Synth 8-155] case statement is not full and has no default [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:182]
+INFO: [Synth 8-6157] synthesizing module 'rf' [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/rf.v:1]
+INFO: [Synth 8-6155] done synthesizing module 'rf' (0#1) [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/rf.v:1]
+INFO: [Synth 8-6157] synthesizing module 'alu' [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/alu.v:3]
+INFO: [Synth 8-6155] done synthesizing module 'alu' (0#1) [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/alu.v:3]
+INFO: [Synth 8-6157] synthesizing module 'shift' [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/shift.v:7]
+INFO: [Synth 8-6155] done synthesizing module 'shift' (0#1) [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/shift.v:7]
+INFO: [Synth 8-6157] synthesizing module 'daligner' [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/daligner.v:3]
+INFO: [Synth 8-155] case statement is not full and has no default [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/daligner.v:123]
+INFO: [Synth 8-6155] done synthesizing module 'daligner' (0#1) [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/daligner.v:3]
+INFO: [Synth 8-6157] synthesizing module 'dmem' [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/dmem.v:3]
+	Parameter INIT_FILE bound to: data.mif - type: string 
+	Parameter DMEM_SIZE bound to: 2048 - type: integer 
+INFO: [Synth 8-3876] $readmem data file 'data.mif' is read successfully [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/dmem.v:25]
+INFO: [Synth 8-6155] done synthesizing module 'dmem' (0#1) [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/dmem.v:3]
+INFO: [Synth 8-6155] done synthesizing module 'riscv' (0#1) [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/riscv.v:5]
+WARNING: [Synth 8-7129] Port ADDR[31] in module dmem is either unconnected or has no load
+WARNING: [Synth 8-7129] Port ADDR[30] in module dmem is either unconnected or has no load
+WARNING: [Synth 8-7129] Port ADDR[29] in module dmem is either unconnected or has no load
+WARNING: [Synth 8-7129] Port ADDR[28] in module dmem is either unconnected or has no load
+WARNING: [Synth 8-7129] Port ADDR[27] in module dmem is either unconnected or has no load
+WARNING: [Synth 8-7129] Port ADDR[26] in module dmem is either unconnected or has no load
+WARNING: [Synth 8-7129] Port ADDR[25] in module dmem is either unconnected or has no load
+WARNING: [Synth 8-7129] Port ADDR[24] in module dmem is either unconnected or has no load
+WARNING: [Synth 8-7129] Port ADDR[23] in module dmem is either unconnected or has no load
+WARNING: [Synth 8-7129] Port ADDR[22] in module dmem is either unconnected or has no load
+WARNING: [Synth 8-7129] Port ADDR[21] in module dmem is either unconnected or has no load
+WARNING: [Synth 8-7129] Port ADDR[20] in module dmem is either unconnected or has no load
+WARNING: [Synth 8-7129] Port ADDR[19] in module dmem is either unconnected or has no load
+WARNING: [Synth 8-7129] Port ADDR[18] in module dmem is either unconnected or has no load
+WARNING: [Synth 8-7129] Port ADDR[17] in module dmem is either unconnected or has no load
+WARNING: [Synth 8-7129] Port ADDR[16] in module dmem is either unconnected or has no load
+WARNING: [Synth 8-7129] Port ADDR[15] in module dmem is either unconnected or has no load
+WARNING: [Synth 8-7129] Port ADDR[14] in module dmem is either unconnected or has no load
+WARNING: [Synth 8-7129] Port ADDR[13] in module dmem is either unconnected or has no load
+WARNING: [Synth 8-7129] Port CLK in module daligner is either unconnected or has no load
+---------------------------------------------------------------------------------
+Finished RTL Elaboration : Time (s): cpu = 00:00:03 ; elapsed = 00:00:04 . Memory (MB): peak = 2511.727 ; gain = 444.707 ; free physical = 6357 ; free virtual = 11509
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1863.866; parent = 1651.381; children = 212.485
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3514.340; parent = 2511.730; children = 1002.609
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:03 ; elapsed = 00:00:04 . Memory (MB): peak = 2529.539 ; gain = 462.520 ; free physical = 6355 ; free virtual = 11507
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1863.866; parent = 1651.381; children = 212.485
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3532.152; parent = 2529.543; children = 1002.609
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:03 ; elapsed = 00:00:04 . Memory (MB): peak = 2529.539 ; gain = 462.520 ; free physical = 6355 ; free virtual = 11507
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1863.866; parent = 1651.381; children = 212.485
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3532.152; parent = 2529.543; children = 1002.609
+---------------------------------------------------------------------------------
+Netlist sorting complete. Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00.01 . Memory (MB): peak = 2529.539 ; gain = 0.000 ; free physical = 6350 ; free virtual = 11502
+INFO: [Project 1-570] Preparing netlist for logic optimization
+
+Processing XDC Constraints
+Initializing timing engine
+Parsing XDC File [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/constrs_1/imports/fpga/riscv.xdc]
+Finished Parsing XDC File [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/constrs_1/imports/fpga/riscv.xdc]
+INFO: [Project 1-236] Implementation specific constraints were found while reading constraint file [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/constrs_1/imports/fpga/riscv.xdc]. These constraints will be ignored for synthesis but will be used in implementation. Impacted constraints are listed in the file [.Xil/riscv_propImpl.xdc].
+Resolution: To avoid this warning, move constraints listed in [.Xil/riscv_propImpl.xdc] to another XDC file and exclude this new file from synthesis with the used_in_synthesis property (File Properties dialog in GUI) and re-run elaboration/synthesis.
+Completed Processing XDC Constraints
+
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2698.289 ; gain = 0.000 ; free physical = 6155 ; free virtual = 11368
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2698.289 ; gain = 0.000 ; free physical = 6154 ; free virtual = 11366
+INFO: [Synth 8-11241] undeclared symbol 'REGCCE', assumed default net type 'wire' [/opt/xilinx/Vivado/2022.2/data/verilog/src/unimacro/BRAM_SINGLE_MACRO.v:2170]
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:07 ; elapsed = 00:00:08 . Memory (MB): peak = 2698.289 ; gain = 631.270 ; free physical = 6241 ; free virtual = 11425
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1863.866; parent = 1651.381; children = 212.485
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3668.887; parent = 2666.277; children = 1002.609
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7a100tcsg324-1
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:07 ; elapsed = 00:00:08 . Memory (MB): peak = 2698.289 ; gain = 631.270 ; free physical = 6241 ; free virtual = 11425
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1863.866; parent = 1651.381; children = 212.485
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3668.887; parent = 2666.277; children = 1002.609
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying 'set_property' XDC Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:07 ; elapsed = 00:00:08 . Memory (MB): peak = 2698.289 ; gain = 631.270 ; free physical = 6236 ; free virtual = 11418
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1863.866; parent = 1651.381; children = 212.485
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3668.887; parent = 2666.277; children = 1002.609
+---------------------------------------------------------------------------------
+WARNING: [Synth 8-327] inferring latch for variable 'iDATAO_reg' [/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.srcs/sources_1/imports/np/daligner.v:117]
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:07 ; elapsed = 00:00:09 . Memory (MB): peak = 2698.289 ; gain = 631.270 ; free physical = 6218 ; free virtual = 11400
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1863.866; parent = 1651.381; children = 212.485
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3668.887; parent = 2666.277; children = 1002.609
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input   64 Bit       Adders := 1     
+	   3 Input   33 Bit       Adders := 1     
+	   2 Input   33 Bit       Adders := 1     
+	   2 Input   32 Bit       Adders := 2     
++---XORs : 
+	   2 Input     32 Bit         XORs := 1     
+	   2 Input      1 Bit         XORs := 1     
++---Registers : 
+	               32 Bit    Registers := 17    
+	               18 Bit    Registers := 1     
+	               15 Bit    Registers := 3     
+	                5 Bit    Registers := 7     
+	                3 Bit    Registers := 1     
+	                2 Bit    Registers := 7     
+	                1 Bit    Registers := 8     
++---Multipliers : 
+	              32x32  Multipliers := 1     
+	              32x33  Multipliers := 1     
++---RAMs : 
+	              64K Bit	(2048 X 32 bit)          RAMs := 1     
++---Muxes : 
+	   2 Input   33 Bit        Muxes := 1     
+	   2 Input   32 Bit        Muxes := 18    
+	   4 Input   32 Bit        Muxes := 5     
+	   3 Input   32 Bit        Muxes := 3     
+	 117 Input   32 Bit        Muxes := 1     
+	   2 Input    5 Bit        Muxes := 14    
+	  10 Input    5 Bit        Muxes := 1     
+	   4 Input    5 Bit        Muxes := 2     
+	   3 Input    5 Bit        Muxes := 1     
+	  12 Input    5 Bit        Muxes := 1     
+	   8 Input    4 Bit        Muxes := 1     
+	   7 Input    4 Bit        Muxes := 1     
+	  12 Input    3 Bit        Muxes := 1     
+	  12 Input    2 Bit        Muxes := 3     
+	   3 Input    2 Bit        Muxes := 2     
+	   2 Input    2 Bit        Muxes := 1     
+	   4 Input    2 Bit        Muxes := 1     
+	   7 Input    2 Bit        Muxes := 1     
+	   6 Input    1 Bit        Muxes := 1     
+	   2 Input    1 Bit        Muxes := 1     
+	   3 Input    1 Bit        Muxes := 1     
+	  12 Input    1 Bit        Muxes := 4     
+	   7 Input    1 Bit        Muxes := 1     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 240 (col length:80)
+BRAMs: 270 (col length: RAMB18 80 RAMB36 40)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+WARNING: [Synth 8-7080] Parallel synthesis criteria is not met
+DSP Report: Generating DSP MEM_MUL_UU, operation Mode is: A2*B2.
+DSP Report: register EX_MEM_RS1_VAL_reg is absorbed into DSP MEM_MUL_UU.
+DSP Report: register MEM_MUL_UU is absorbed into DSP MEM_MUL_UU.
+DSP Report: operator MEM_MUL_UU is absorbed into DSP MEM_MUL_UU.
+DSP Report: operator MEM_MUL_UU is absorbed into DSP MEM_MUL_UU.
+DSP Report: Generating DSP MEM_MUL_UU, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register EX_MEM_STORE_VAL_reg is absorbed into DSP MEM_MUL_UU.
+DSP Report: register EX_MEM_RS1_VAL_reg is absorbed into DSP MEM_MUL_UU.
+DSP Report: operator MEM_MUL_UU is absorbed into DSP MEM_MUL_UU.
+DSP Report: operator MEM_MUL_UU is absorbed into DSP MEM_MUL_UU.
+DSP Report: Generating DSP MEM_MUL_UU, operation Mode is: A2*B2.
+DSP Report: register MEM_MUL_UU is absorbed into DSP MEM_MUL_UU.
+DSP Report: register MEM_MUL_UU is absorbed into DSP MEM_MUL_UU.
+DSP Report: operator MEM_MUL_UU is absorbed into DSP MEM_MUL_UU.
+DSP Report: operator MEM_MUL_UU is absorbed into DSP MEM_MUL_UU.
+DSP Report: Generating DSP MEM_MUL_UU, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register EX_MEM_STORE_VAL_reg is absorbed into DSP MEM_MUL_UU.
+DSP Report: register MEM_MUL_UU is absorbed into DSP MEM_MUL_UU.
+DSP Report: operator MEM_MUL_UU is absorbed into DSP MEM_MUL_UU.
+DSP Report: operator MEM_MUL_UU is absorbed into DSP MEM_MUL_UU.
+DSP Report: Generating DSP MEM_MUL_SU_FULL, operation Mode is: A2*B2.
+DSP Report: register EX_MEM_RS1_VAL_reg is absorbed into DSP MEM_MUL_SU_FULL.
+DSP Report: register MEM_MUL_SU_FULL is absorbed into DSP MEM_MUL_SU_FULL.
+DSP Report: operator MEM_MUL_SU_FULL is absorbed into DSP MEM_MUL_SU_FULL.
+DSP Report: operator MEM_MUL_SU_FULL is absorbed into DSP MEM_MUL_SU_FULL.
+DSP Report: Generating DSP MEM_MUL_SU_FULL, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register EX_MEM_RS1_VAL_reg is absorbed into DSP MEM_MUL_SU_FULL.
+DSP Report: register EX_MEM_STORE_VAL_reg is absorbed into DSP MEM_MUL_SU_FULL.
+DSP Report: operator MEM_MUL_SU_FULL is absorbed into DSP MEM_MUL_SU_FULL.
+DSP Report: operator MEM_MUL_SU_FULL is absorbed into DSP MEM_MUL_SU_FULL.
+DSP Report: Generating DSP MEM_MUL_SU_FULL, operation Mode is: A2*B2.
+DSP Report: register MEM_MUL_SU_FULL is absorbed into DSP MEM_MUL_SU_FULL.
+DSP Report: register MEM_MUL_SU_FULL is absorbed into DSP MEM_MUL_SU_FULL.
+DSP Report: operator MEM_MUL_SU_FULL is absorbed into DSP MEM_MUL_SU_FULL.
+DSP Report: operator MEM_MUL_SU_FULL is absorbed into DSP MEM_MUL_SU_FULL.
+DSP Report: Generating DSP MEM_MUL_SU_FULL, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register EX_MEM_STORE_VAL_reg is absorbed into DSP MEM_MUL_SU_FULL.
+DSP Report: register MEM_MUL_SU_FULL is absorbed into DSP MEM_MUL_SU_FULL.
+DSP Report: operator MEM_MUL_SU_FULL is absorbed into DSP MEM_MUL_SU_FULL.
+DSP Report: operator MEM_MUL_SU_FULL is absorbed into DSP MEM_MUL_SU_FULL.
+DSP Report: Generating DSP MEM_MUL_SS, operation Mode is: A2*B2.
+DSP Report: register EX_MEM_RS1_VAL_reg is absorbed into DSP MEM_MUL_SS.
+DSP Report: register MEM_MUL_SS is absorbed into DSP MEM_MUL_SS.
+DSP Report: operator MEM_MUL_SS is absorbed into DSP MEM_MUL_SS.
+DSP Report: operator MEM_MUL_SS is absorbed into DSP MEM_MUL_SS.
+DSP Report: Generating DSP MEM_MUL_SS, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register EX_MEM_RS1_VAL_reg is absorbed into DSP MEM_MUL_SS.
+DSP Report: register EX_MEM_STORE_VAL_reg is absorbed into DSP MEM_MUL_SS.
+DSP Report: operator MEM_MUL_SS is absorbed into DSP MEM_MUL_SS.
+DSP Report: operator MEM_MUL_SS is absorbed into DSP MEM_MUL_SS.
+DSP Report: Generating DSP MEM_MUL_SS, operation Mode is: A2*B2.
+DSP Report: register MEM_MUL_SS is absorbed into DSP MEM_MUL_SS.
+DSP Report: register MEM_MUL_SS is absorbed into DSP MEM_MUL_SS.
+DSP Report: operator MEM_MUL_SS is absorbed into DSP MEM_MUL_SS.
+DSP Report: operator MEM_MUL_SS is absorbed into DSP MEM_MUL_SS.
+DSP Report: Generating DSP MEM_MUL_SS, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register EX_MEM_STORE_VAL_reg is absorbed into DSP MEM_MUL_SS.
+DSP Report: register MEM_MUL_SS is absorbed into DSP MEM_MUL_SS.
+DSP Report: operator MEM_MUL_SS is absorbed into DSP MEM_MUL_SS.
+DSP Report: operator MEM_MUL_SS is absorbed into DSP MEM_MUL_SS.
+WARNING: [Synth 8-7129] Port CLK in module daligner is either unconnected or has no load
+INFO: [Synth 8-6851] RAM (dmem/mem_reg) has partial Byte Wide Write Enable pattern, however no output register found in fanout of RAM. Recommended to use supported Byte Wide Write Enable template. 
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:18 ; elapsed = 00:00:20 . Memory (MB): peak = 2698.289 ; gain = 631.270 ; free physical = 5805 ; free virtual = 11060
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1866.372; parent = 1654.881; children = 212.485
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3668.887; parent = 2666.277; children = 1002.609
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+
+Distributed RAM: Preliminary Mapping Report (see note below)
++------------+-------------------+-----------+----------------------+------------------+
+|Module Name | RTL Object        | Inference | Size (Depth x Width) | Primitives       | 
++------------+-------------------+-----------+----------------------+------------------+
+|rf          | REGISTER_FILE_reg | Implied   | 32 x 32              | RAM32M x 12      | 
+|riscv       | dmem/mem_reg      | Implied   | 2 K x 32             | RAM256X1S x 256  | 
++------------+-------------------+-----------+----------------------+------------------+
+
+Note: The table above is a preliminary report that shows the Distributed RAMs at the current stage of the synthesis flow. Some Distributed RAMs may be reimplemented as non Distributed RAM primitives later in the synthesis flow. Multiple instantiated RAMs are reported only once.
+
+DSP: Preliminary Mapping Report (see note below. The ' indicates corresponding REG is set)
++------------+------------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|Module Name | DSP Mapping      | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
++------------+------------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|riscv       | A2*B2            | 18     | 16     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|riscv       | (PCIN>>17)+A2*B2 | 16     | 16     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|riscv       | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|riscv       | (PCIN>>17)+A2*B2 | 18     | 16     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|riscv       | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|riscv       | (PCIN>>17)+A2*B2 | 16     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|riscv       | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|riscv       | (PCIN>>17)+A2*B2 | 18     | 16     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|riscv       | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|riscv       | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 30     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|riscv       | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|riscv       | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 47     | 1    | 1    | -    | -    | -     | 0    | 0    | 
++------------+------------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+
+Note: The table above is a preliminary report that shows the DSPs inferred at the current stage of the synthesis flow. Some DSP may be reimplemented as non DSP primitives later in the synthesis flow. Multiple instantiated DSPs are reported only once.
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying XDC Timing Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:21 ; elapsed = 00:00:23 . Memory (MB): peak = 2698.289 ; gain = 631.270 ; free physical = 5675 ; free virtual = 10931
+Synthesis current peak Physical Memory [PSS] (MB): peak = 2004.704; parent = 1793.223; children = 212.485
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3668.887; parent = 2666.277; children = 1002.609
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:22 ; elapsed = 00:00:24 . Memory (MB): peak = 2698.289 ; gain = 631.270 ; free physical = 5677 ; free virtual = 10918
+Synthesis current peak Physical Memory [PSS] (MB): peak = 2010.212; parent = 1798.740; children = 212.485
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3668.887; parent = 2666.277; children = 1002.609
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+
+Distributed RAM: Final Mapping Report
++------------+-------------------+-----------+----------------------+------------------+
+|Module Name | RTL Object        | Inference | Size (Depth x Width) | Primitives       | 
++------------+-------------------+-----------+----------------------+------------------+
+|rf          | REGISTER_FILE_reg | Implied   | 32 x 32              | RAM32M x 12      | 
+|riscv       | dmem/mem_reg      | Implied   | 2 K x 32             | RAM256X1S x 256  | 
++------------+-------------------+-----------+----------------------+------------------+
+
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:22 ; elapsed = 00:00:24 . Memory (MB): peak = 2698.289 ; gain = 631.270 ; free physical = 5675 ; free virtual = 10915
+Synthesis current peak Physical Memory [PSS] (MB): peak = 2012.360; parent = 1800.910; children = 212.485
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3668.887; parent = 2666.277; children = 1002.609
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:24 ; elapsed = 00:00:26 . Memory (MB): peak = 2698.289 ; gain = 631.270 ; free physical = 5675 ; free virtual = 10918
+Synthesis current peak Physical Memory [PSS] (MB): peak = 2012.606; parent = 1801.156; children = 212.485
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3668.887; parent = 2666.277; children = 1002.609
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:24 ; elapsed = 00:00:26 . Memory (MB): peak = 2698.289 ; gain = 631.270 ; free physical = 5675 ; free virtual = 10918
+Synthesis current peak Physical Memory [PSS] (MB): peak = 2012.622; parent = 1801.172; children = 212.485
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3668.887; parent = 2666.277; children = 1002.609
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:25 ; elapsed = 00:00:26 . Memory (MB): peak = 2698.289 ; gain = 631.270 ; free physical = 5678 ; free virtual = 10915
+Synthesis current peak Physical Memory [PSS] (MB): peak = 2012.653; parent = 1801.203; children = 212.485
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3668.887; parent = 2666.277; children = 1002.609
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:25 ; elapsed = 00:00:26 . Memory (MB): peak = 2698.289 ; gain = 631.270 ; free physical = 5678 ; free virtual = 10915
+Synthesis current peak Physical Memory [PSS] (MB): peak = 2012.653; parent = 1801.203; children = 212.485
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3668.887; parent = 2666.277; children = 1002.609
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:25 ; elapsed = 00:00:26 . Memory (MB): peak = 2698.289 ; gain = 631.270 ; free physical = 5678 ; free virtual = 10915
+Synthesis current peak Physical Memory [PSS] (MB): peak = 2012.653; parent = 1801.203; children = 212.485
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3668.887; parent = 2666.277; children = 1002.609
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:25 ; elapsed = 00:00:26 . Memory (MB): peak = 2698.289 ; gain = 631.270 ; free physical = 5678 ; free virtual = 10915
+Synthesis current peak Physical Memory [PSS] (MB): peak = 2012.653; parent = 1801.203; children = 212.485
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3668.887; parent = 2666.277; children = 1002.609
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+DSP Final Report (the ' indicates corresponding REG is set)
++------------+----------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|Module Name | DSP Mapping    | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
++------------+----------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|riscv       | A'*B'          | 17     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|riscv       | PCIN>>17+A'*B' | 15     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|riscv       | A'*B'          | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|riscv       | PCIN>>17+A'*B' | 17     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|riscv       | A'*B'          | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|riscv       | PCIN>>17+A'*B' | 15     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|riscv       | A'*B'          | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|riscv       | PCIN>>17+A'*B' | 17     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|riscv       | A'*B'          | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|riscv       | PCIN>>17+A'*B' | 30     | 18     | -      | -      | 30     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|riscv       | A'*B'          | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|riscv       | PCIN>>17+A'*B' | 17     | 18     | -      | -      | 47     | 1    | 1    | -    | -    | -     | 0    | 0    | 
++------------+----------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+----------+------+
+|      |Cell      |Count |
++------+----------+------+
+|1     |BUFG      |     2|
+|2     |CARRY4    |    69|
+|3     |DSP48E1   |    12|
+|4     |LUT1      |     2|
+|5     |LUT2      |   224|
+|6     |LUT3      |    29|
+|7     |LUT4      |   181|
+|8     |LUT5      |   227|
+|9     |LUT6      |   646|
+|10    |MUXF7     |    57|
+|11    |RAM256X1S |   256|
+|12    |RAM32M    |    10|
+|13    |RAM32X1D  |     4|
+|14    |FDRE      |   623|
+|15    |FDSE      |     2|
+|16    |LD        |    32|
+|17    |IBUF      |     2|
+|18    |OBUF      |    32|
++------+----------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:25 ; elapsed = 00:00:26 . Memory (MB): peak = 2698.289 ; gain = 631.270 ; free physical = 5678 ; free virtual = 10915
+Synthesis current peak Physical Memory [PSS] (MB): peak = 2012.653; parent = 1801.203; children = 212.485
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3668.887; parent = 2666.277; children = 1002.609
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 3 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:23 ; elapsed = 00:00:25 . Memory (MB): peak = 2698.289 ; gain = 462.520 ; free physical = 5743 ; free virtual = 10980
+Synthesis Optimization Complete : Time (s): cpu = 00:00:25 ; elapsed = 00:00:27 . Memory (MB): peak = 2698.289 ; gain = 631.270 ; free physical = 5743 ; free virtual = 10980
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00.01 . Memory (MB): peak = 2698.289 ; gain = 0.000 ; free physical = 5847 ; free virtual = 11083
+INFO: [Netlist 29-17] Analyzing 440 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2698.289 ; gain = 0.000 ; free physical = 5761 ; free virtual = 11021
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 302 instances were transformed.
+  LD => LDCE: 32 instances
+  RAM256X1S => RAM256X1S (MUXF7(x2), MUXF8, RAMS64E(x4)): 256 instances
+  RAM32M => RAM32M (RAMD32(x6), RAMS32(x2)): 10 instances
+  RAM32X1D => RAM32X1D (RAMD32(x2)): 4 instances
+
+Synth Design complete, checksum: ff5ad71d
+INFO: [Common 17-83] Releasing license: Synthesis
+39 Infos, 38 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:00:30 ; elapsed = 00:01:12 . Memory (MB): peak = 2698.289 ; gain = 980.215 ; free physical = 5974 ; free virtual = 11241
+INFO: [Common 17-1381] The checkpoint '/st/c2024/c4264/jikken/RISC/riscv-np/fpga/riscv/riscv.runs/synth_1/riscv.dcp' has been generated.
+INFO: [runtcl-4] Executing : report_utilization -file riscv_utilization_synth.rpt -pb riscv_utilization_synth.pb
+INFO: [Common 17-206] Exiting Vivado at Thu May 21 18:14:34 2026...

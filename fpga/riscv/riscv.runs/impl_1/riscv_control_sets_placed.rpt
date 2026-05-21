@@ -1,0 +1,117 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2022.2 (lin64) Build 3671981 Fri Oct 14 04:59:54 MDT 2022
+| Date         : Thu May 21 18:15:59 2026
+| Host         : st145 running 64-bit Ubuntu 22.04.1 LTS
+| Command      : report_control_sets -verbose -file riscv_control_sets_placed.rpt
+| Design       : riscv
+| Device       : xc7a100t
+------------------------------------------------------------------------------------
+
+Control Set Information
+
+Table of Contents
+-----------------
+1. Summary
+2. Histogram
+3. Flip-Flop Distribution
+4. Detailed Control Set Information
+
+1. Summary
+----------
+
++----------------------------------------------------------+-------+
+|                          Status                          | Count |
++----------------------------------------------------------+-------+
+| Total control sets                                       |    39 |
+|    Minimum number of control sets                        |    39 |
+|    Addition due to synthesis replication                 |     0 |
+|    Addition due to physical synthesis replication        |     0 |
+| Unused register locations in slices containing registers |    15 |
++----------------------------------------------------------+-------+
+* Control sets can be merged at opt_design using control_set_merge or merge_equivalent_drivers
+** Run report_qor_suggestions for automated merging and remapping suggestions
+
+
+2. Histogram
+------------
+
++--------------------+-------+
+|       Fanout       | Count |
++--------------------+-------+
+| Total control sets |    39 |
+| >= 0 to < 4        |     0 |
+| >= 4 to < 6        |     1 |
+| >= 6 to < 8        |     0 |
+| >= 8 to < 10       |     0 |
+| >= 10 to < 12      |     0 |
+| >= 12 to < 14      |     0 |
+| >= 14 to < 16      |     0 |
+| >= 16              |    38 |
++--------------------+-------+
+* Control sets can be remapped at either synth_design or opt_design
+
+
+3. Flip-Flop Distribution
+-------------------------
+
++--------------+-----------------------+------------------------+-----------------+--------------+
+| Clock Enable | Synchronous Set/Reset | Asynchronous Set/Reset | Total Registers | Total Slices |
++--------------+-----------------------+------------------------+-----------------+--------------+
+| No           | No                    | No                     |              32 |           22 |
+| No           | No                    | Yes                    |               0 |            0 |
+| No           | Yes                   | No                     |             499 |          166 |
+| Yes          | No                    | No                     |               0 |            0 |
+| Yes          | No                    | Yes                    |               0 |            0 |
+| Yes          | Yes                   | No                     |             126 |           40 |
++--------------+-----------------------+------------------------+-----------------+--------------+
+
+
+4. Detailed Control Set Information
+-----------------------------------
+
++----------------+--------------------------------------+----------------------+------------------+----------------+--------------+
+|  Clock Signal  |             Enable Signal            |   Set/Reset Signal   | Slice Load Count | Bel Load Count | Bels / Slice |
++----------------+--------------------------------------+----------------------+------------------+----------------+--------------+
+|  CLK_IBUF_BUFG |                                      | ID_EX_D_RD           |                1 |              5 |         5.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_1792_2047_0_0_i_1_n_0   |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_1024_1279_24_24_i_1_n_0 |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_1280_1535_0_0_i_1_n_0   |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_1792_2047_24_24_i_1_n_0 |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_256_511_0_0_i_1_n_0     |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_512_767_8_8_i_1_n_0     |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_0_255_24_24_i_2_n_0     |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_1280_1535_24_24_i_1_n_0 |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_1536_1791_16_16_i_1_n_0 |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_1536_1791_8_8_i_1_n_0   |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_0_255_8_8_i_2_n_0       |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_1792_2047_16_16_i_1_n_0 |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_1792_2047_8_8_i_1_n_0   |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_256_511_16_16_i_1_n_0   |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_256_511_24_24_i_1_n_0   |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_512_767_0_0_i_1_n_0     |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_512_767_16_16_i_1_n_0   |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_768_1023_24_24_i_1_n_0  |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_768_1023_8_8_i_1_n_0    |                      |                8 |             32 |         4.00 |
+|  iDATAO        |                                      |                      |               22 |             32 |         1.45 |
+|  CLK_IBUF_BUFG | IF_ID_IR[31]_i_2_n_0                 | RST                  |               12 |             32 |         2.67 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_0_255_0_0_i_2_n_0       |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_1024_1279_0_0_i_1_n_0   |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_1024_1279_8_8_i_1_n_0   |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_1280_1535_16_16_i_1_n_0 |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_1536_1791_0_0_i_1_n_0   |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_1536_1791_24_24_i_1_n_0 |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_256_511_8_8_i_1_n_0     |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_768_1023_0_0_i_1_n_0    |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_768_1023_16_16_i_1_n_0  |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_1280_1535_8_8_i_1_n_0   |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_512_767_24_24_i_1_n_0   |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_0_255_16_16_i_2_n_0     |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | dmem/mem_reg_1024_1279_16_16_i_1_n_0 |                      |                8 |             32 |         4.00 |
+|  CLK_IBUF_BUFG | rf/p_0_in__0                         |                      |               11 |             88 |         8.00 |
+|  CLK_IBUF_BUFG | IF_ID_IR[31]_i_2_n_0                 | IF_ID_IR[31]_i_1_n_0 |               28 |             94 |         3.36 |
+|  CLK_IBUF_BUFG |                                      | ID_EX_PC0            |               50 |            188 |         3.76 |
+|  CLK_IBUF_BUFG |                                      | RST                  |              115 |            306 |         2.66 |
++----------------+--------------------------------------+----------------------+------------------+----------------+--------------+
+
+
