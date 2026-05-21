@@ -1,0 +1,135 @@
+initial
+begin
+    A[31:0] = # 10 32'h0000_0001;	//  add 
+    A[31:0] = # 10 32'h0000_0001;
+    A[31:0] = # 10 32'hFFFF_FFFF;
+    A[31:0] = # 10 32'h8000_0000;
+    A[31:0] = # 10 32'h7FFF_FFFF;
+    A[31:0] = # 10 32'h0000_0001;
+    A[31:0] = # 10 32'hFFFF_FFFE;
+    A[31:0] = # 10 32'hFFFF_FFFF;
+    A[31:0] = # 10 32'h0000_000A;	//  10-3=7　SUB 
+    A[31:0] = # 10 32'h0000_0000;	//  0-1 (Underflow) 
+    A[31:0] = # 10 32'h8000_0000;	//  Min-1 (Overflow) 
+    A[31:0] = # 10 32'hFFFF_FFFF;	//  All & Zero = 0 AND 
+    A[31:0] = # 10 32'hAAAA_AAAA;	//  Alternating = 0 
+    A[31:0] = # 10 32'hF0F0_F0F0;	//  F0F0... 
+    A[31:0] = # 10 32'hAAAA_AAAA;	//  Result: FFFFFFFF OR 
+    A[31:0] = # 10 32'h0000_0000;	//  Result: 12345678 
+    A[31:0] = # 10 32'hFFFF_FFFF;	//  All 1s 
+    A[31:0] = # 10 32'h1234_5678;	//  Same values = 0 XOR 
+    A[31:0] = # 10 32'hFFFF_FFFF;	//  All 1s 
+    A[31:0] = # 10 32'hAAAA_AAAA;	//  Bit inversion 
+    A[31:0] = # 10 32'hFFFF_FFFF;	//  -1 < 1  => 1 (True) ILT 
+    A[31:0] = # 10 32'h0000_0001;	//  1 < -1  => 0 (False) 
+    A[31:0] = # 10 32'h8000_0000;	//  Min < Max => 1 (True) 
+    A[31:0] = # 10 32'h0000_0005;	//  5 < 5    => 0 (Equal) 
+    A[31:0] = # 10 32'h0000_0001;	//  1 < Large => 1 (True) ILTU 
+    A[31:0] = # 10 32'hFFFF_FFFF;	//  Large < 1 => 0 (False) 
+    A[31:0] = # 10 32'hFFFF_FFFF;	//  same =>0(False) 
+    A[31:0] = # 10 32'h0000_0000;	//  0 < Max   => 1 (True) 
+    A[31:0] = # 10 32'h0000_0001;	//  1 >= -1 => 1 (True) IGE 
+    A[31:0] = # 10 32'hFFFF_FFFF;	//  -1 >= 1 => 0 (False) 
+    A[31:0] = # 10 32'h7FFF_FFFF;	//  Max >= Max => 1 (Equal) 
+    A[31:0] = # 10 32'hFFFF_FFFF;	//  Max >= 0 => 1 (True) IGEU 
+    A[31:0] = # 10 32'h0000_0000;	//  0 >= Max => 0 (False) 
+    A[31:0] = # 10 32'h8000_0000;	//  Same => 1 
+    A[31:0] = # 10 32'hABCD_1234;	//  Same => 1 
+    A[31:0] = # 10 32'h0000_0000;	//  Zero => 1 
+    A[31:0] = # 10 32'h0000_0001;	//  Diff => 0 
+    A[31:0] = # 10 32'h0000_0001;	//  Diff => 1 
+    A[31:0] = # 10 32'hFFFF_FFFF;	//  Same => 0 
+    A[31:0] = # 10 32'h0000_0000;	//  Zero/Max => 1 
+    A[31:0] = # 10 32'h0000_0000;	//  Zero/Max => 1 
+end
+
+initial
+begin
+    B[31:0] = # 10 32'h0000_0001;	//  add 
+    B[31:0] = # 10 32'hFFFF_FFFF;
+    B[31:0] = # 10 32'h0000_0001;
+    B[31:0] = # 10 32'h8000_0000;
+    B[31:0] = # 10 32'h0000_0001;
+    B[31:0] = # 10 32'hFFFF_FFFE;
+    B[31:0] = # 10 32'h0000_0001;
+    B[31:0] = # 10 32'hFFFF_FFFF;
+    B[31:0] = # 10 32'h0000_0003;	//  10-3=7　SUB 
+    B[31:0] = # 10 32'h0000_0001;	//  0-1 (Underflow) 
+    B[31:0] = # 10 32'h0000_0001;	//  Min-1 (Overflow) 
+    B[31:0] = # 10 32'h0000_0000;	//  All & Zero = 0 AND 
+    B[31:0] = # 10 32'h5555_5555;	//  Alternating = 0 
+    B[31:0] = # 10 32'hFFFF_FFFF;	//  F0F0... 
+    B[31:0] = # 10 32'h5555_5555;	//  Result: FFFFFFFF OR 
+    B[31:0] = # 10 32'h1234_5678;	//  Result: 12345678 
+    B[31:0] = # 10 32'hFFFF_FFFF;	//  All 1s 
+    B[31:0] = # 10 32'h1234_5678;	//  Same values = 0 XOR 
+    B[31:0] = # 10 32'h0000_0000;	//  All 1s 
+    B[31:0] = # 10 32'hFFFF_FFFF;	//  Bit inversion 
+    B[31:0] = # 10 32'h0000_0001;	//  -1 < 1  => 1 (True) ILT 
+    B[31:0] = # 10 32'hFFFF_FFFF;	//  1 < -1  => 0 (False) 
+    B[31:0] = # 10 32'h7FFF_FFFF;	//  Min < Max => 1 (True) 
+    B[31:0] = # 10 32'h0000_0005;	//  5 < 5    => 0 (Equal) 
+    B[31:0] = # 10 32'hFFFF_FFFF;	//  1 < Large => 1 (True) ILTU 
+    B[31:0] = # 10 32'h0000_0001;	//  Large < 1 => 0 (False) 
+    B[31:0] = # 10 32'hFFFF_FFFF;	//  same =>0(False) 
+    B[31:0] = # 10 32'hFFFF_FFFF;	//  0 < Max   => 1 (True) 
+    B[31:0] = # 10 32'hFFFF_FFFF;	//  1 >= -1 => 1 (True) IGE 
+    B[31:0] = # 10 32'h0000_0001;	//  -1 >= 1 => 0 (False) 
+    B[31:0] = # 10 32'h7FFF_FFFF;	//  Max >= Max => 1 (Equal) 
+    B[31:0] = # 10 32'h0000_0000;	//  Max >= 0 => 1 (True) IGEU 
+    B[31:0] = # 10 32'hFFFF_FFFF;	//  0 >= Max => 0 (False) 
+    B[31:0] = # 10 32'h8000_0000;	//  Same => 1 
+    B[31:0] = # 10 32'hABCD_1234;	//  Same => 1 
+    B[31:0] = # 10 32'h0000_0000;	//  Zero => 1 
+    B[31:0] = # 10 32'h0000_0002;	//  Diff => 0 
+    B[31:0] = # 10 32'h0000_0002;	//  Diff => 1 
+    B[31:0] = # 10 32'hFFFF_FFFF;	//  Same => 0 
+    B[31:0] = # 10 32'hFFFF_FFFF;	//  Zero/Max => 1 
+    B[31:0] = # 10 32'hFFFF_FFFF;	//  Zero/Max => 1 
+end
+
+initial
+begin
+    C[4:0] = # 10 `IADD;	//  add 
+    C[4:0] = # 10 `IADD;
+    C[4:0] = # 10 `IADD;
+    C[4:0] = # 10 `IADD;
+    C[4:0] = # 10 `IADD;
+    C[4:0] = # 10 `IADD;
+    C[4:0] = # 10 `IADD;
+    C[4:0] = # 10 `IADD;
+    C[4:0] = # 10 `ISUB;	//  10-3=7　SUB 
+    C[4:0] = # 10 `ISUB;	//  0-1 (Underflow) 
+    C[4:0] = # 10 `ISUB;	//  Min-1 (Overflow) 
+    C[4:0] = # 10 `IAND;	//  All & Zero = 0 AND 
+    C[4:0] = # 10 `IAND;	//  Alternating = 0 
+    C[4:0] = # 10 `IAND;	//  F0F0... 
+    C[4:0] = # 10 `IOR;	//  Result: FFFFFFFF OR 
+    C[4:0] = # 10 `IOR;	//  Result: 12345678 
+    C[4:0] = # 10 `IOR;	//  All 1s 
+    C[4:0] = # 10 `IXOR;	//  Same values = 0 XOR 
+    C[4:0] = # 10 `IXOR;	//  All 1s 
+    C[4:0] = # 10 `IXOR;	//  Bit inversion 
+    C[4:0] = # 10 `ILT;	//  -1 < 1  => 1 (True) ILT 
+    C[4:0] = # 10 `ILT;	//  1 < -1  => 0 (False) 
+    C[4:0] = # 10 `ILT;	//  Min < Max => 1 (True) 
+    C[4:0] = # 10 `ILT;	//  5 < 5    => 0 (Equal) 
+    C[4:0] = # 10 `ILTU;	//  1 < Large => 1 (True) ILTU 
+    C[4:0] = # 10 `ILTU;	//  Large < 1 => 0 (False) 
+    C[4:0] = # 10 `ILTU;	//  same =>0(False) 
+    C[4:0] = # 10 `ILTU;	//  0 < Max   => 1 (True) 
+    C[4:0] = # 10 `IGE;	//  1 >= -1 => 1 (True) IGE 
+    C[4:0] = # 10 `IGE;	//  -1 >= 1 => 0 (False) 
+    C[4:0] = # 10 `IGE;	//  Max >= Max => 1 (Equal) 
+    C[4:0] = # 10 `IGEU;	//  Max >= 0 => 1 (True) IGEU 
+    C[4:0] = # 10 `IGEU;	//  0 >= Max => 0 (False) 
+    C[4:0] = # 10 `IGEU;	//  Same => 1 
+    C[4:0] = # 10 `IEQ;	//  Same => 1 
+    C[4:0] = # 10 `IEQ;	//  Zero => 1 
+    C[4:0] = # 10 `IEQ;	//  Diff => 0 
+    C[4:0] = # 10 `INE;	//  Diff => 1 
+    C[4:0] = # 10 `INE;	//  Same => 0 
+    C[4:0] = # 10 `INE;	//  Zero/Max => 1 
+    C[4:0] = # 10 `INE;	//  Zero/Max => 1 
+end
+
