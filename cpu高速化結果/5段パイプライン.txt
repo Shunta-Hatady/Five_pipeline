@@ -1,6 +1,47 @@
 クイックソート5段パイプライン
-クロック:1655085
-命令数:118777 
-
+100MHz時のリセット期間を含む実行時間:1655085 ns
+実行命令数:118777 
+周期 12 ns　（周波数　83.3MHz）
+実行サイクル数		(1655085ns-15ns)/10ns=165507 cycle
+CPI  165507/118777=1.3934
+実行時間：118777*(165507/118777)*12n=1.9861ms
 
 スライド：20pt以上でゴシックフォントがいい
+
+1. Summary
+----------
+
++--------------------------+--------------+
+| Total On-Chip Power (W)  | 0.225        |
+| Design Power Budget (W)  | Unspecified* |
+| Power Budget Margin (W)  | NA           |
+| Dynamic (W)              | 0.120        |
+| Device Static (W)        | 0.105        |
+| Effective TJA (C/W)      | 4.6          |
+| Max Ambient (C)          | 84.0         |
+| Junction Temperature (C) | 26.0         |
+| Confidence Level         | Medium       |
+| Setting File             | ---          |
+| Simulation Activity File | ---          |
+| Design Nets Matched      | NA           |
++--------------------------+--------------+
+* Specify Design Power Budget using, set_operating_conditions -design_power_budget <value in Watts>
+
+1. Slice Logic
+--------------
+
++----------------------------+------+-------+------------+-----------+-------+
+|          Site Type         | Used | Fixed | Prohibited | Available | Util% |
++----------------------------+------+-------+------------+-----------+-------+
+| Slice LUTs                 | 2316 |     0 |          0 |     63400 |  3.65 |
+|   LUT as Logic             | 1248 |     0 |          0 |     63400 |  1.97 |
+|   LUT as Memory            | 1068 |     0 |          0 |     19000 |  5.62 |
+|     LUT as Distributed RAM | 1068 |     0 |            |           |       |
+|     LUT as Shift Register  |    0 |     0 |            |           |       |
+| Slice Registers            |  657 |     0 |          0 |    126800 |  0.52 |
+|   Register as Flip Flop    |  625 |     0 |          0 |    126800 |  0.49 |
+|   Register as Latch        |   32 |     0 |          0 |    126800 |  0.03 |
+| F7 Muxes                   |  569 |     0 |          0 |     31700 |  1.79 |
+| F8 Muxes                   |  256 |     0 |          0 |     15850 |  1.62 |
++----------------------------+------+-------+------------+-----------+-------+
+* Warning! LUT value is adjusted to account for LUT combining.
