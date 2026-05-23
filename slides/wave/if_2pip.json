@@ -1,0 +1,26 @@
+ {  config: { "hscale": 1.5 },
+    "signal": [
+    
+      {
+        "name": "CLK",
+        "wave": "P..."
+      },
+
+      {
+        "name": "分岐命令",
+        "wave": "57zz",
+        "data": ["FD", "EMW", "FD", "EMW"]
+      },
+      
+      {
+        "name": "後続命令",
+        "wave": "z2zz",
+        "data": ["FLUSH"]
+      },
+         {
+          "name": "分岐先命令",
+          "wave": "zz57",
+          "data": ["FD", "EMW", "FD", "EMW"]
+        }
+ ]
+ }

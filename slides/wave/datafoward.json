@@ -1,0 +1,22 @@
+ {  config: { "hscale": 1 },
+    "signal": [
+    
+      {
+        "name": "CLK",
+        "wave": "P..."
+      },
+
+      {
+        "name": "命令1",
+        "wave": "57zz",
+        "data": ["FD", "EMW", "FD", "EMW"]
+      },
+      
+      {
+        "name": "命令2",
+        "wave": "z57z",
+        "data": ["FD", "EMW", "FD", "EMW"]
+      }
+ ]
+ 
+ }
