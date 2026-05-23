@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>パイプライン高速化 解説</title>
+<style>
+  :root {
+    --blue:   #0077cc;
+    --lblue:  #e8f4ff;
+    --navy:   #0f3a5c;
+    --green:  #0a7a3a;
+    --lgreen: #e8f5ee;
+    --orange: #c05000;
+    --lorange:#fff3e8;
+    --red:    #cc2200;
+    --gray:   #555;
+    --border: #c8d8e8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Meiryo UI', 'メイリオ', sans-serif;
+    background: #f5f8fb;
+    color: #1a1a2e;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  /* ===== レイアウト ===== */
+  header {
+    background: var(--navy);
+    color: #fff;
+    padding: 28px 48px;
+    border-bottom: 4px solid var(--blue);
+  }
+  header h1 { font-size: 1.7em; font-weight: 900; }
+  header p  { color: #aad4ee; margin-top: 6px; font-size: .92em; }
+
+  main { max-width: 1000px; margin: 0 auto; padding: 36px 24px 80px; }
+
+  /* ===== セクション ===== */
+  section {
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    margin-bottom: 36px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px #0001;
+  }
+  .sec-hdr {
+    padding: 14px 24px;
+    font-size: 1.15em;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sec-hdr .num {
+    background: #fff;
+    border-radius: 50%;
+    width: 1.8em; height: 1.8em;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .85em; font-weight: 900;
+  }
+  .sec-body { padding: 24px; }
+
+  .blue-hdr  { background: var(--navy);   color: #fff; }
+  .blue-hdr  .num { color: var(--navy); }
+  .green-hdr { background: var(--green);  color: #fff; }
+  .green-hdr .num { color: var(--green); }
+  .orange-hdr{ background: var(--orange); color: #fff; }
+  .orange-hdr .num { color: var(--orange); }
+  .gray-hdr  { background: #3a3a4a;       color: #fff; }
+
+  /* ===== カード ===== */
+  .card {
+    background: var(--lblue);
+    border: 1px solid #b0d0f0;
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 12px 0;
+  }
+  .card.green  { background: var(--lgreen); border-color: #90d0aa; }
+  .card.orange { background: var(--lorange); border-color: #f0b070; }
+  .card.yellow { background: #fffbe8; border-color: #e0c840; }
+  .card-title  { font-weight: 700; color: var(--navy); margin-bottom: 6px; font-size: .95em; }
+
+  /* ===== タイポグラフィ ===== */
+  h3 { font-size: 1em; font-weight: 700; color: var(--navy); margin: 18px 0 8px;
+       border-left: 4px solid var(--blue); padding-left: 10px; }
+  p  { margin: 8px 0; }
+  ul { padding-left: 1.5em; margin: 6px 0; }
+  li { margin: 4px 0; }
+  strong { color: var(--green); }
+  em { color: var(--orange); font-style: normal; font-weight: 700; }
+  code { background: #eee; border-radius: 3px; padding: 1px 5px; font-size: .88em; font-family: monospace; }
+
+  /* ===== テーブル ===== */
+  table { width: 100%; border-collapse: collapse; font-size: .88em; margin: 12px 0; }
+  thead tr { background: var(--navy); color: #fff; }
+  th { padding: 8px 12px; text-align: center; }
+  tbody tr:nth-child(odd)  { background: #f0f5fa; }
+  tbody tr:nth-child(even) { background: #e8f0f8; }
+  td { padding: 7px 12px; text-align: center; border-bottom: 1px solid var(--border); }
+  td.l { text-align: left; }
+  .hl  { color: var(--green);  font-weight: 700; }
+  .hlr { color: var(--red);    font-weight: 700; }
+  .hlo { color: var(--orange); font-weight: 700; }
+
+  /* ===== パイプラインタイミング図 ===== */
+  .timing { overflow-x: auto; }
+  .timing-grid {
+    display: grid;
+    gap: 3px;
+    min-width: 600px;
+  }
+  .timing-row { display: flex; align-items: center; gap: 3px; }
+  .timing-label {
+    width: 80px; flex-shrink: 0;
+    font-size: .82em; color: #444; text-align: right;
+    padding-right: 8px; font-weight: 700;
+  }
+  .t-cell {
+    width: 52px; height: 28px;
+    border-radius: 4px;
+    font-size: .72em; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; flex-shrink: 0;
+  }
+  .t-empty { background: transparent; }
+  .t-if    { background: #2980b9; }
+  .t-id    { background: #8e44ad; }
+  .t-ex    { background: #c0392b; }
+  .t-mem   { background: #d35400; }
+  .t-wb    { background: #27ae60; }
+  .t-stall { background: #999; border: 2px dashed #555; color: #333; }
+  .t-seq   { background: #2c5f8a; }
+
+  .cycle-hdr { display: flex; gap: 3px; padding-left: 88px; margin-bottom: 4px; }
+  .cycle-num { width: 52px; text-align: center; font-size: .75em; color: #888; font-weight: 700; flex-shrink: 0; }
+
+  /* ===== ステージ図 ===== */
+  .pipeline-diagram {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 16px 0;
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+  .stage-box {
+    border-radius: 6px;
+    padding: 10px 14px;
+    text-align: center;
+    min-width: 90px;
+    font-weight: 700;
+    font-size: .85em;
+    flex-shrink: 0;
+  }
+  .stage-arrow {
+    font-size: 1.4em;
+    color: var(--gray);
+    padding: 0 4px;
+    flex-shrink: 0;
+  }
+  .s-if  { background: #dbeeff; color: #2980b9; border: 2px solid #2980b9; }
+  .s-id  { background: #eddeff; color: #8e44ad; border: 2px solid #8e44ad; }
+  .s-ex  { background: #ffdede; color: #c0392b; border: 2px solid #c0392b; }
+  .s-mem { background: #ffe8d0; color: #d35400; border: 2px solid #d35400; }
+  .s-wb  { background: #d5f5e3; color: #27ae60; border: 2px solid #27ae60; }
+
+  /* ===== 数式風 ===== */
+  .formula {
+    background: #fffbe8;
+    border: 1.5px solid #e0c840;
+    border-radius: 5px;
+    padding: 10px 18px;
+    font-size: .95em;
+    text-align: center;
+    margin: 12px 0;
+    font-family: 'Times New Roman', serif;
+  }
+
+  /* ===== ハザード図 ===== */
+  .hazard-row {
+    display: flex; align-items: center;
+    gap: 8px; margin: 6px 0; font-size: .85em;
+  }
+  .hz-inst { width: 110px; font-weight: 700; flex-shrink: 0; }
+  .hz-stage {
+    width: 42px; height: 26px;
+    border-radius: 3px; display: flex; align-items: center; justify-content: center;
+    font-size: .75em; font-weight: 700; color: #fff; flex-shrink: 0;
+  }
+  .hz-dep { /* 依存関係矢印 */
+    position: relative;
+  }
+  .dep-line {
+    width: 2px; background: var(--red);
+    height: 30px;
+    position: absolute;
+    left: 50%;
+  }
+
+  /* ===== グリッド2列 ===== */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media(max-width:680px){ .grid2 { grid-template-columns: 1fr; } }
+
+  /* ===== フォワーディング図 ===== */
+  .fwd-box {
+    display: flex; gap: 4px; align-items: flex-start; margin: 8px 0;
+    font-size: .82em;
+  }
+  .fwd-label { width: 70px; flex-shrink: 0; font-weight: 700; padding-top: 4px; }
+
+  /* ===== まとめ比較 ===== */
+  .compare-bar {
+    display: flex; align-items: center; gap: 10px; margin: 6px 0;
+  }
+  .bar-label { width: 120px; font-size: .85em; color: #444; flex-shrink: 0; }
+  .bar-track { flex: 1; background: #e8eef5; border-radius: 4px; height: 22px; overflow:hidden; }
+  .bar-fill  { height: 100%; border-radius: 4px; display: flex; align-items: center;
+               padding-left: 8px; font-size: .78em; font-weight: 700; color: #fff; }
+  .bar-val   { width: 80px; font-size: .85em; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>RISC-Vプロセッサ 高速化の詳細解説</h1>
+  <p>逐次実行 / 2段パイプライン / 5段パイプライン の仕組みと違い</p>
+</header>
+
+<main>
+
+<!-- ============================================================
+     1. 実行時間の基本式
+     ============================================================ -->
+<section>
+  <div class="sec-hdr gray-hdr">
+    <span class="num" style="background:#fff;color:#3a3a4a;">0</span>
+    実行時間の基本式
+  </div>
+  <div class="sec-body">
+    <div class="formula">
+      実行時間 = 実行命令数 &nbsp;×&nbsp; CPI &nbsp;×&nbsp; クロック周期
+      &emsp;⟺&emsp;
+      実行時間 = 実行命令数 &nbsp;×&nbsp; CPI &nbsp;÷&nbsp; 動作周波数
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">各項目の意味</div>
+        <ul>
+          <li><strong>実行命令数</strong>：プログラムが実行する命令の総数（アルゴリズムで決まる）</li>
+          <li><em>CPI</em>（Cycles Per Instruction）：1命令あたりの平均クロック数（アーキテクチャで決まる）</li>
+          <li><strong>クロック周期</strong>：1クロックの長さ = 1 ÷ 周波数（回路設計で決まる）</li>
+        </ul>
+      </div>
+      <div class="card green">
+        <div class="card-title">高速化の手段</div>
+        <ul>
+          <li>命令数を減らす → <strong>アルゴリズム改善</strong>（選択→クイック）</li>
+          <li>CPIを下げる → <strong>スーパースカラ，OoO実行</strong></li>
+          <li>周波数を上げる → <strong>パイプライン化</strong>（クリティカルパス短縮）</li>
+        </ul>
+        <p style="margin-top:8px; font-size:.85em; color:#555;">
+          ※ パイプラインは周波数↑と引き換えにCPIも↑するトレードオフ
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     2. 逐次実行CPU
+     ============================================================ -->
+<section>
+  <div class="sec-hdr blue-hdr">
+    <span class="num">1</span>
+    逐次実行CPU（シングルサイクル）
+  </div>
+  <div class="sec-body">
+
+    <h3>仕組み</h3>
+    <p>
+      1クロックで1命令すべてを処理するシングルサイクルCPU．
+      デコード・ALU演算・メモリアクセス・ライトバックがすべて<em>組み合わせ回路</em>で構成され，
+      クロックの立ち上がりでPCだけが更新される．
+    </p>
+
+    <div class="pipeline-diagram">
+      <div class="stage-box s-if">IF<br><small>命令フェッチ</small></div>
+      <div class="stage-arrow">→</div>
+      <div class="stage-box s-id">ID/EX<br><small>デコード・演算</small></div>
+      <div class="stage-arrow">→</div>
+      <div class="stage-box s-mem">MEM<br><small>メモリ</small></div>
+      <div class="stage-arrow">→</div>
+      <div class="stage-box s-wb">WB<br><small>書き戻し</small></div>
+      <div style="margin-left:16px; padding:8px 16px; background:#e8eef8; border-radius:6px; font-size:.85em;">
+        ← すべて <strong>1クロック（組み合わせ回路）</strong> で完結
+      </div>
+    </div>
+
+    <h3>ソースコードで見る動作（quick_sort/riscv.v）</h3>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">WB_RD_VAL は組み合わせ回路（330行）</div>
+        <pre style="background:#f0f5ff;border-radius:4px;padding:10px;font-size:.82em;font-family:monospace;line-height:1.6;">// WB
+always @( WB_MUX or DATAI or PC4 or E_RD_VAL )
+  case( WB_MUX )
+  2'b01:   WB_RD_VAL &lt;= DATAI;    // Load
+  2'b10:   WB_RD_VAL &lt;= PC4;     // jal/jalr
+  default: WB_RD_VAL &lt;= E_RD_VAL; // ALU
+  endcase</pre>
+        <p style="font-size:.83em;margin-top:6px;color:#555;">
+          <code>always @(...)</code>（クロックなし）= 純粋な組み合わせ回路．<br>
+          入力が変わればその瞬間に出力が確定する．
+        </p>
+      </div>
+      <div class="card">
+        <div class="card-title">PC更新のみがレジスタ（FF）で同期（74行）</div>
+        <pre style="background:#f0f5ff;border-radius:4px;padding:10px;font-size:.82em;font-family:monospace;line-height:1.6;">always @( posedge CLK or posedge RST )
+  if( RST )
+    PC &lt;= 32'h0000_0000;
+  else if( E_PC_E )
+    PC &lt;= BR_ADDR;  // 分岐・JAL・JALR
+  else
+    PC &lt;= PC4;      // 通常: PC+4</pre>
+        <p style="font-size:.83em;margin-top:6px;color:#555;">
+          FF（フリップフロップ）はPC1本のみ．毎クロック次命令へ進む．
+        </p>
+      </div>
+    </div>
+
+    <h3>分岐判定ロジック（ソースコード 287行）</h3>
+    <div class="card">
+      <pre style="background:#f0f5ff;border-radius:4px;padding:10px;font-size:.82em;font-family:monospace;line-height:1.6;">assign E_PC_E = PC_E &amp;&amp; !( ( FT == `FT_B ) &amp;&amp; !ALU_RD_VAL[0] );</pre>
+      <ul style="font-size:.85em;margin-top:8px;">
+        <li><code>PC_E</code>：JAL・JALR・条件分岐命令でセット</li>
+        <li>B型（条件分岐）：<code>ALU_RD_VAL[0]</code> が 1 のとき成立（IEQ/INE/ILT/… の結果ビット）</li>
+        <li>JAL・JALR：常に成立（<code>PC_E=1</code>かつB型でない）</li>
+      </ul>
+    </div>
+
+    <h3>なぜハザードが存在しないか</h3>
+    <div class="card green">
+      パイプラインレジスタが一切ない（PCを除く）ため，命令間の依存関係は問題にならない．
+      <em>WB_RD_VAL</em>（書き戻し値）は組み合わせ回路で即座に確定しており，
+      レジスタファイルへの書き込みと同クロックの読み出しが同時に完了するため
+      <strong>データハザードが構造上発生しない</strong>．
+      フォワーディング回路・ストール制御は実装されていない．
+    </div>
+
+    <h3>クリティカルパスとクロック周期の制限</h3>
+    <div class="card orange">
+      <div class="card-title">最長経路：ロード命令（LW）</div>
+      <p>
+        imem読み出し → デコード → ALU（アドレス計算）→ dmem読み出し → WB_RD_VAL確定<br>
+        この全経路が1クロック内に収まる必要があり，<em>周期 20 ns（50 MHz）</em>が下限となる．
+      </p>
+    </div>
+
+    <h3>メモリ構成（ソースコード 8〜12行）</h3>
+    <div class="card">
+      <pre style="background:#f0f5ff;border-radius:4px;padding:10px;font-size:.82em;font-family:monospace;">parameter IMEM_SIZE = 32768,  // 32kW = 128kB
+parameter DMEM_SIZE = 32768,  // 32kW = 128kB</pre>
+      命令メモリ・データメモリ各 <strong>32kW（128kB）</strong>．Distributed RAM に展開されるため
+      LUT消費が大きい（16,428 LUT = LUT全体の 86.46%）．
+    </div>
+
+    <h3>実測値</h3>
+    <table>
+      <thead><tr><th>項目</th><th>値</th></tr></thead>
+      <tbody>
+        <tr><td class="l">実行命令数</td><td>118,777</td></tr>
+        <tr><td class="l">動作周波数</td><td>50 MHz（クロック周期 20 ns）</td></tr>
+        <tr><td class="l">CPI</td><td class="hl">1.000（ハザードなし）</td></tr>
+        <tr><td class="l">実行時間</td><td>118,777 × 1.0 × 20 ns = <strong>2.376 ms</strong></td></tr>
+        <tr><td class="l">命令・データメモリ</td><td>各 32kW（128kB）</td></tr>
+        <tr><td class="l">LUT使用率</td><td>29.90%（うち Memory LUT が 16,428 = 86.46%）</td></tr>
+        <tr><td class="l">消費電力</td><td>0.384 W</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================
+     3. 2段パイプライン
+     ============================================================ -->
+<section>
+  <div class="sec-hdr green-hdr">
+    <span class="num">2</span>
+    2段パイプラインCPU
+  </div>
+  <div class="sec-body">
+
+    <h3>仕組み：命令実行を2ステージに分割</h3>
+    <p>
+      命令の処理を <strong>Stage 1（IF）</strong> と <strong>Stage 2（EX/MEM/WB）</strong> に分割し，
+      間に <em>パイプラインレジスタ</em> を挿入する．
+      Stage 1 が命令Nをフェッチしている間に，Stage 2 は命令N−1を実行できる．
+    </p>
+
+    <div class="pipeline-diagram">
+      <div style="text-align:center;">
+        <div class="stage-box s-if" style="width:130px;">Stage 1<br><strong>IF</strong><br><small>命令フェッチ</small></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;padding:0 6px;">
+        <div style="font-size:.75em;color:#888;margin-bottom:2px;">パイプライン<br>レジスタ</div>
+        <div style="font-size:1.5em;color:#888;">‖</div>
+      </div>
+      <div style="text-align:center;">
+        <div class="stage-box" style="width:200px;background:#dff5e8;color:#27ae60;border:2px solid #27ae60;">
+          Stage 2<br><strong>EX / MEM / WB</strong><br><small>実行・メモリ・書き戻し</small>
+        </div>
+      </div>
+    </div>
+
+    <h3>クリティカルパス短縮の効果</h3>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">逐次：クリティカルパス = IF+ID+EX+MEM+WB 全体</div>
+        <p>一番遅い段の遅延がすべてクロック周期に影響する<br>→ 周期 <em>20 ns</em>（50 MHz）</p>
+      </div>
+      <div class="card green">
+        <div class="card-title">2段PL：各ステージが独立</div>
+        <p>Stage 1 と Stage 2 のうち，遅い方がクロック周期を決める<br>→ 周期 <strong>14 ns</strong>（71.4 MHz，+43%）</p>
+      </div>
+    </div>
+
+    <h3>タイミング図（通常動作）</h3>
+    <div class="timing">
+      <div class="cycle-hdr">
+        <div class="cycle-num">1</div><div class="cycle-num">2</div>
+        <div class="cycle-num">3</div><div class="cycle-num">4</div>
+        <div class="cycle-num">5</div><div class="cycle-num">6</div>
+      </div>
+      <div class="timing-row">
+        <div class="timing-label">命令 1</div>
+        <div class="t-cell t-if">FD</div>
+        <div class="t-cell t-wb">EMW</div>
+      </div>
+      <div class="timing-row">
+        <div class="timing-label">命令 2</div>
+        <div class="t-cell t-empty"></div>
+        <div class="t-cell t-if">FD</div>
+        <div class="t-cell t-wb">EMW</div>
+      </div>
+      <div class="timing-row">
+        <div class="timing-label">命令 3</div>
+        <div class="t-cell t-empty"></div>
+        <div class="t-cell t-empty"></div>
+        <div class="t-cell t-if">FD</div>
+        <div class="t-cell t-wb">EMW</div>
+      </div>
+    </div>
+    <p style="font-size:.83em;color:#666;margin-top:4px;">
+      FD = フェッチ・デコード・レジスタ読出　／　EMW = 実行・メモリ・ライトバック
+    </p>
+
+    <h3>データフォワーディング（実装済み）</h3>
+    <div class="card green">
+      <div class="card-title">✅ ソースコード（riscv.v 196〜203行）に明示的に実装されている</div>
+      <pre style="background:#f0fff4;border-radius:4px;padding:12px;margin-top:8px;font-size:.83em;font-family:monospace;line-height:1.6;overflow-x:auto;">// データフォワーディング
+// EMWステージの結果をFDステージのRS1/RS2に転送
+wire [31:0] FWD_RS1, FWD_RS2;
+
+assign FWD_RS1 = ( EMW_D_RD != 5'b0 &amp;&amp; EMW_D_RD == `IR_RS1 )
+                 ? WB_RD_VAL : RF_DATA1;
+assign FWD_RS2 = ( EMW_D_RD != 5'b0 &amp;&amp; EMW_D_RD == `IR_RS2 )
+                 ? WB_RD_VAL : RF_DATA2;</pre>
+    </div>
+
+    <h3>なぜ2段ではストールなしでフォワーディングが成立するか</h3>
+    <div class="grid2">
+      <div>
+        <p style="font-weight:700; color:var(--navy); margin-bottom:8px;">回路の動作タイミング（1クロック内）</p>
+        <div style="border:1.5px solid var(--border);border-radius:6px;overflow:hidden;font-size:.82em;">
+          <div style="background:#0f3a5c;color:#fff;padding:6px 12px;font-weight:700;">クロック立ち上がり後</div>
+          <div style="padding:10px 14px;background:#f8fbff;line-height:2;">
+            <div>① EMWステージが <code>WB_RD_VAL</code> を<strong>組み合わせ回路</strong>で確定</div>
+            <div style="color:var(--gray);padding-left:1em;font-size:.93em;">↓ 同一クロックサイクル内</div>
+            <div>② FDステージの <code>FWD_RS1/RS2</code> がその値を参照</div>
+            <div style="color:var(--gray);padding-left:1em;font-size:.93em;">↓</div>
+            <div>③ パイプラインレジスタに <code>FWD_RS1/RS2</code> を書き込み</div>
+            <div style="color:var(--gray);padding-left:1em;font-size:.93em;">↓ 次クロック立ち上がり</div>
+            <div>④ EMWステージが正しい値で演算開始</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p style="font-weight:700; color:var(--navy); margin-bottom:8px;">5段PLとの違い</p>
+        <div class="card" style="margin:0;">
+          <p>5段PLでは EX→EX 間に <strong>3サイクル</strong> の距離があるため，フォワーディング専用の配線（MUX）が必要になる．</p>
+          <p style="margin-top:8px;">2段PLではステージ間が <strong>1サイクル</strong> だけで，EMWの <code>WB_RD_VAL</code> は組み合わせ回路なので，次サイクルの FD からそのまま参照できる．</p>
+          <p style="margin-top:8px; color:var(--green); font-weight:700;">→ 追加のフォワーディングMUXが不要</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>データフォワーディングのタイミング図</h3>
+    <div class="timing">
+      <div class="cycle-hdr">
+        <div class="cycle-num">1</div><div class="cycle-num">2</div>
+        <div class="cycle-num">3</div><div class="cycle-num">4</div>
+        <div class="cycle-num">5</div>
+      </div>
+      <div class="timing-row">
+        <div class="timing-label" style="font-size:.78em;">ADD x1,x2,x3</div>
+        <div class="t-cell t-if" style="font-size:.68em;">FD</div>
+        <div class="t-cell t-wb" style="font-size:.68em;">EMW<br><span style="font-size:.8em;">WB_RD確定</span></div>
+      </div>
+      <div class="timing-row">
+        <div class="timing-label" style="font-size:.78em;">SUB x4,x1,x5</div>
+        <div class="t-cell t-empty"></div>
+        <div class="t-cell t-if" style="font-size:.65em;">FD<br><span style="color:#ffd700;">↑FWD</span></div>
+        <div class="t-cell t-wb" style="font-size:.68em;">EMW<br><span style="font-size:.8em;">正しく演算</span></div>
+      </div>
+      <div class="timing-row">
+        <div class="timing-label" style="font-size:.78em;">AND x5,x6,x7</div>
+        <div class="t-cell t-empty"></div>
+        <div class="t-cell t-empty"></div>
+        <div class="t-cell t-if" style="font-size:.68em;">FD</div>
+        <div class="t-cell t-wb" style="font-size:.68em;">EMW</div>
+      </div>
+    </div>
+    <p style="font-size:.83em;color:#666;margin-top:6px;">
+      サイクル2で EMW が <code>WB_RD_VAL</code>（x1の値）を確定 → 同サイクルの FD がフォワーディングで取得 → <strong>ストールなし</strong>
+    </p>
+
+    <h3>残るハザード：制御ハザード（分岐命令）</h3>
+    <div class="card orange">
+      <div class="card-title">分岐命令のみ1サイクルフラッシュが発生</div>
+      <p>
+        分岐命令（beq, bne 等）の成立・不成立は EMW ステージの EX まで確定しない．
+        その間に FD に入った次の命令（フォールスルー先）は <em>無効（NOP）</em> にする必要がある．
+      </p>
+      <pre style="background:#fff3e0;border-radius:4px;padding:10px;margin-top:8px;font-size:.83em;font-family:monospace;line-height:1.6;">// ソースコード（riscv.v 299〜300行）
+assign FLUSH = E_PC_E;   // 分岐成立時に FD→EMW レジスタを NOP で上書き
+
+// フラッシュ時の処理（231〜246行）
+else if(FLUSH) begin
+  EMW_IR   &lt;= 32'h0000_0013;  // NOP (addi x0, x0, 0)
+  EMW_D_RD &lt;= 5'b0;
+  ...
+end</pre>
+      <div class="timing" style="margin-top:12px;">
+        <div class="cycle-hdr">
+          <div class="cycle-num">1</div><div class="cycle-num">2</div>
+          <div class="cycle-num">3</div><div class="cycle-num">4</div>
+        </div>
+        <div class="timing-row">
+          <div class="timing-label" style="font-size:.78em;">BEQ（分岐）</div>
+          <div class="t-cell t-if" style="font-size:.68em;">FD</div>
+          <div class="t-cell t-wb" style="font-size:.65em;">EMW<br>分岐確定</div>
+        </div>
+        <div class="timing-row">
+          <div class="timing-label" style="font-size:.78em;">次PC命令</div>
+          <div class="t-cell t-empty"></div>
+          <div class="t-cell t-stall" style="font-size:.65em;">FLUSH<br>(NOP)</div>
+          <div class="t-cell t-empty"></div>
+        </div>
+        <div class="timing-row">
+          <div class="timing-label" style="font-size:.78em;">分岐先命令</div>
+          <div class="t-cell t-empty"></div>
+          <div class="t-cell t-empty"></div>
+          <div class="t-cell t-if" style="font-size:.68em;">FD</div>
+          <div class="t-cell t-wb" style="font-size:.68em;">EMW</div>
+        </div>
+      </div>
+      <p style="font-size:.83em;margin-top:8px;">
+        → 分岐成立ごとに <em>1サイクルのペナルティ</em>．これが CPI &gt; 1.0 の主因（クイックソートは分岐命令が多い）．
+      </p>
+    </div>
+
+    <h3>実測値</h3>
+    <table>
+      <thead><tr><th>項目</th><th>値</th><th>逐次との比較</th></tr></thead>
+      <tbody>
+        <tr><td class="l">動作周波数</td><td class="hl">71.4 MHz（14 ns）</td><td>+43%</td></tr>
+        <tr><td class="l">実行クロック数</td><td>136,760</td><td>+15%（分岐フラッシュ分）</td></tr>
+        <tr><td class="l">CPI</td><td class="hlo">1.1514</td><td>+15%（データハザードはフォワーディングで解消，制御ハザードのみフラッシュ）</td></tr>
+        <tr><td class="l">実行時間</td><td class="hl">1.914 ms</td><td><strong>−19%（1.24×高速）</strong></td></tr>
+        <tr><td class="l">LUT使用率</td><td>29.79%</td><td>ほぼ同等</td></tr>
+        <tr><td class="l">消費電力</td><td class="hlo">0.470 W</td><td>+22%（高周波動作のため）</td></tr>
+        <tr><td class="l">消費電力量 P×T</td><td>0.900 mJ</td><td>−1.3%（ほぼ同等）</td></tr>
+      </tbody>
+    </table>
+
+    <div class="card yellow">
+      <div class="card-title">まとめ：なぜ高速化できたか</div>
+      <p>
+        データフォワーディングにより<strong>データハザードはストールなし</strong>で解消．<br>
+        CPI増加の原因は<em>分岐命令の制御ハザード（1サイクルフラッシュ）のみ</em>．<br>
+        周波数 +43% の効果が CPI +15% の悪化を上回り，実行時間 <strong>2.376 ms → 1.914 ms（1.24×高速）</strong>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     4. 5段パイプライン
+     ============================================================ -->
+<section>
+  <div class="sec-hdr orange-hdr">
+    <span class="num">3</span>
+    5段パイプラインCPU
+  </div>
+  <div class="sec-body">
+
+    <h3>仕組み：命令実行を5ステージに分割</h3>
+    <p>
+      命令の処理を <strong>5つの独立したステージ</strong> に分割し，最大5命令を同時に処理できる構成．
+      RV32I 基本命令セットに加え <em>RV32M 乗算拡張</em>（MUL/MULH/MULHSU/MULHU）を実装する．
+      各ステージ間に <strong>パイプラインレジスタ</strong>（IF/ID・ID/EX・EX/MEM・MEM/WB）を配置し，
+      データハザード対策として3経路の<strong>フォワーディング</strong>と2種類の<em>ストール</em>制御を実装している．
+    </p>
+
+    <div class="pipeline-diagram">
+      <div class="stage-box s-if">IF<br><small>命令フェッチ</small></div>
+      <div class="stage-arrow">→</div>
+      <div class="stage-box s-id">ID<br><small>デコード<br>レジスタ読出</small></div>
+      <div class="stage-arrow">→</div>
+      <div class="stage-box s-ex">EX<br><small>ALU演算<br>アドレス計算</small></div>
+      <div class="stage-arrow">→</div>
+      <div class="stage-box s-mem">MEM<br><small>メモリ<br>読み書き</small></div>
+      <div class="stage-arrow">→</div>
+      <div class="stage-box s-wb">WB<br><small>レジスタ<br>書き戻し</small></div>
+    </div>
+    <p style="margin-top:8px;font-size:.85em;color:#555;">
+      ↑ 各ステージ間に <em>パイプラインレジスタ</em>（IF/ID，ID/EX，EX/MEM，MEM/WB）を配置
+    </p>
+
+    <h3>タイミング図（ハザードなしの理想状態）</h3>
+    <div class="timing">
+      <div class="cycle-hdr">
+        <div class="cycle-num">1</div><div class="cycle-num">2</div><div class="cycle-num">3</div>
+        <div class="cycle-num">4</div><div class="cycle-num">5</div><div class="cycle-num">6</div>
+        <div class="cycle-num">7</div><div class="cycle-num">8</div><div class="cycle-num">9</div>
+      </div>
+      <div class="timing-row">
+        <div class="timing-label">命令 1</div>
+        <div class="t-cell t-if">IF</div><div class="t-cell t-id">ID</div>
+        <div class="t-cell t-ex">EX</div><div class="t-cell t-mem">MEM</div>
+        <div class="t-cell t-wb">WB</div>
+      </div>
+      <div class="timing-row">
+        <div class="timing-label">命令 2</div>
+        <div class="t-cell t-empty"></div>
+        <div class="t-cell t-if">IF</div><div class="t-cell t-id">ID</div>
+        <div class="t-cell t-ex">EX</div><div class="t-cell t-mem">MEM</div>
+        <div class="t-cell t-wb">WB</div>
+      </div>
+      <div class="timing-row">
+        <div class="timing-label">命令 3</div>
+        <div class="t-cell t-empty"></div><div class="t-cell t-empty"></div>
+        <div class="t-cell t-if">IF</div><div class="t-cell t-id">ID</div>
+        <div class="t-cell t-ex">EX</div><div class="t-cell t-mem">MEM</div>
+        <div class="t-cell t-wb">WB</div>
+      </div>
+      <div class="timing-row">
+        <div class="timing-label">命令 4</div>
+        <div class="t-cell t-empty"></div><div class="t-cell t-empty"></div><div class="t-cell t-empty"></div>
+        <div class="t-cell t-if">IF</div><div class="t-cell t-id">ID</div>
+        <div class="t-cell t-ex">EX</div><div class="t-cell t-mem">MEM</div>
+        <div class="t-cell t-wb">WB</div>
+      </div>
+      <div class="timing-row">
+        <div class="timing-label">命令 5</div>
+        <div class="t-cell t-empty"></div><div class="t-cell t-empty"></div>
+        <div class="t-cell t-empty"></div><div class="t-cell t-empty"></div>
+        <div class="t-cell t-if">IF</div><div class="t-cell t-id">ID</div>
+        <div class="t-cell t-ex">EX</div><div class="t-cell t-mem">MEM</div>
+        <div class="t-cell t-wb">WB</div>
+      </div>
+    </div>
+    <p style="font-size:.83em;color:#666;margin-top:6px;">→ 理想状態ではサイクル5以降，毎サイクル1命令完了（CPI=1.0）</p>
+
+    <h3>ソースコードで見るメモリ構成（riscv.v 7〜12行）</h3>
+    <div class="card">
+      <pre style="background:#f0f5ff;border-radius:4px;padding:10px;font-size:.82em;font-family:monospace;line-height:1.6;">parameter IMEM_SIZE = 2048,   // 2kW = 8kB（命令メモリ）
+parameter DMEM_SIZE = 2048,   // 2kW = 8kB（データメモリ）</pre>
+      <p style="font-size:.85em;margin-top:8px;">
+        逐次・2段PL の 32kW（128kB）に対し <em>1/16 のメモリサイズ</em>．<br>
+        Distributed RAM が 16,428 LUT → <strong>1,068 LUT（約1/15）</strong> に激減したことが
+        LUT使用率 29.90% → <strong>3.65%</strong> の主因であり，消費電力削減にも直結する．
+      </p>
+    </div>
+
+    <h3>RV32M 乗算拡張（ソースコード 374〜388行）</h3>
+    <div class="card">
+      <div class="card-title">MUL命令はMEMステージで計算（DSP48E1推論）</div>
+      <pre style="background:#f0f5ff;border-radius:4px;padding:10px;font-size:.82em;font-family:monospace;line-height:1.6;">// MEMステージ: 乗算（DSP48E1推論のため $signed() で記述）
+wire signed [63:0] MEM_MUL_SS = $signed(EX_MEM_RS1_VAL) * $signed(EX_MEM_STORE_VAL);
+...
+// DIV/REMは組み合わせ実装では周波数未達のため未実装（マルチサイクル化が必要）
+default: MEM_MUL_RESULT = 32'h0;</pre>
+      <ul style="font-size:.85em;margin-top:8px;">
+        <li>MUL・MULH・MULHSU・MULHU の4命令を実装（RV32M サブセット）</li>
+        <li>乗算器はEX/MEMレジスタから入力し，<strong>MEMステージ内の組み合わせ回路</strong>で計算</li>
+        <li>DIV・REM は<em>未実装</em>（組み合わせ実装では 12 ns クロック周期を達成できないため）</li>
+        <li>MUL結果は EX ステージでは未確定 → EX/MEM からの転送不可（後述）</li>
+      </ul>
+    </div>
+
+    <h3>ハザードの種類と対策（ソースコード 419〜442行）</h3>
+    <div class="grid2">
+      <div>
+        <div class="card orange" style="margin-bottom:12px;">
+          <div class="card-title">① ALU→ALU データハザード</div>
+          <p>前命令のEX結果を次命令のEXが使う場合．</p>
+          <p style="margin-top:6px;"><strong>対策：フォワーディング（ストールなし）</strong><br>
+          EX/MEMレジスタの値を次命令のEX入力にバイパス転送する（経路②）．</p>
+        </div>
+        <div class="card orange" style="margin-bottom:12px;">
+          <div class="card-title">② ロードユーズハザード（LOAD-USE）</div>
+          <pre style="background:#fff3e0;border-radius:4px;padding:8px;margin-top:6px;font-size:.78em;font-family:monospace;line-height:1.6;">wire LOAD_USE_HAZARD;
+assign LOAD_USE_HAZARD =
+  (ID_EX_WB_MUX == 2'b01) &amp;&amp;  // EXがLOAD命令
+  (ID_EX_D_RD   != 5'b0)  &amp;&amp;  // RDが x0 でない
+  ( ID_EX_D_RD == ID_RS1  ||
+    ID_EX_D_RD == ID_RS2 );</pre>
+          <p style="font-size:.85em;margin-top:6px;color:#c05000;">
+            LOADのメモリ読み出しはMEMステージまで完了しないためフォワーディング不可 → <em>1サイクルストール</em>
+          </p>
+        </div>
+        <div class="card orange">
+          <div class="card-title">③ MULユーズハザード（MUL-USE）</div>
+          <pre style="background:#fff3e0;border-radius:4px;padding:8px;margin-top:6px;font-size:.78em;font-family:monospace;line-height:1.6;">wire MUL_USE_HAZARD;
+assign MUL_USE_HAZARD =
+  ID_EX_IS_MUL &amp;&amp;         // EXがMUL命令
+  (ID_EX_D_RD != 5'b0) &amp;&amp;
+  ( ID_EX_D_RD == ID_RS1 ||
+    ID_EX_D_RD == ID_RS2 );
+
+wire STALL;
+assign STALL = LOAD_USE_HAZARD || MUL_USE_HAZARD;</pre>
+          <p style="font-size:.85em;margin-top:6px;color:#c05000;">
+            MUL結果はMEMステージで計算されるため EX/MEM からの転送不可 → <em>1サイクルストール</em>
+          </p>
+        </div>
+      </div>
+      <div>
+        <div class="card orange">
+          <div class="card-title">④ 制御ハザード（分岐命令）</div>
+          <pre style="background:#fff3e0;border-radius:4px;padding:8px;margin-top:6px;font-size:.78em;font-family:monospace;line-height:1.6;">// riscv.v 315〜317行
+// FLUSH: 分岐成立 → IFとIDの命令をキャンセル
+// （2サイクルペナルティ）
+wire FLUSH;
+assign FLUSH = EX_BRANCH_TAKEN;</pre>
+          <p style="font-size:.85em;margin-top:8px;">
+            分岐成立はEXステージで判明する．この時点で<br>
+            ・IF/ID レジスタ → <em>NOP に上書き</em><br>
+            ・ID/EX レジスタ → <em>NOP に上書き</em><br>
+            の2段分をフラッシュするため <em>2サイクルペナルティ</em>．
+          </p>
+          <p style="font-size:.85em;margin-top:6px;color:#666;">
+            ※ 2段PLは EX で分岐確定，FD→EMW の1段のみフラッシュで <strong>1サイクル</strong>ペナルティ．<br>
+            5段PLは IF・ID の2段分あるため <strong>2サイクル</strong>ペナルティとなる．
+          </p>
+        </div>
+        <div style="margin-top:12px;">
+          <p style="font-weight:700;color:var(--navy);margin-bottom:8px;">分岐フラッシュのタイミング図</p>
+          <div class="timing">
+            <div class="cycle-hdr">
+              <div class="cycle-num">1</div><div class="cycle-num">2</div>
+              <div class="cycle-num">3</div><div class="cycle-num">4</div>
+              <div class="cycle-num">5</div><div class="cycle-num">6</div>
+            </div>
+            <div class="timing-row">
+              <div class="timing-label" style="font-size:.75em;">BEQ（分岐）</div>
+              <div class="t-cell t-if" style="font-size:.65em;">IF</div>
+              <div class="t-cell t-id" style="font-size:.65em;">ID</div>
+              <div class="t-cell t-ex" style="font-size:.62em;">EX<br>確定</div>
+              <div class="t-cell t-mem" style="font-size:.65em;">MEM</div>
+              <div class="t-cell t-wb" style="font-size:.65em;">WB</div>
+            </div>
+            <div class="timing-row">
+              <div class="timing-label" style="font-size:.75em;">PC+4命令</div>
+              <div class="t-cell t-empty"></div>
+              <div class="t-cell t-if" style="font-size:.65em;">IF</div>
+              <div class="t-cell t-stall" style="font-size:.62em;">FLUSH<br>NOP</div>
+            </div>
+            <div class="timing-row">
+              <div class="timing-label" style="font-size:.75em;">PC+8命令</div>
+              <div class="t-cell t-empty"></div>
+              <div class="t-cell t-empty"></div>
+              <div class="t-cell t-stall" style="font-size:.62em;">FLUSH<br>NOP</div>
+            </div>
+            <div class="timing-row">
+              <div class="timing-label" style="font-size:.75em;">分岐先命令</div>
+              <div class="t-cell t-empty"></div>
+              <div class="t-cell t-empty"></div>
+              <div class="t-cell t-empty"></div>
+              <div class="t-cell t-if" style="font-size:.65em;">IF</div>
+              <div class="t-cell t-id" style="font-size:.65em;">ID</div>
+              <div class="t-cell t-ex" style="font-size:.65em;">EX</div>
+            </div>
+          </div>
+          <p style="font-size:.78em;color:#666;margin-top:4px;">分岐成立でIF・IDの2命令をキャンセル → 2サイクルのムダ</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>3経路のデータフォワーディング（ソースコード 208〜282行）</h3>
+    <div class="card green">
+      <div class="card-title">✅ ソースコードに明示的に実装された3つのフォワーディング経路</div>
+
+      <div style="margin-top:12px;">
+        <p style="font-weight:700;color:var(--navy);margin-bottom:6px;">経路① WB→ID フォワーディング（riscv.v 218〜221行）</p>
+        <pre style="background:#f0fff4;border-radius:4px;padding:10px;font-size:.80em;font-family:monospace;line-height:1.6;">// WBステージが書き込むレジスタをIDステージが同クロックで読む場合に転送
+// （3命令差ハザード: WB値はFF出力から組み合わせで確定 → 同サイクル参照可）
+assign ID_RS1_FWD = (WB_D_RD != 5'b0 &amp;&amp; WB_D_RD == ID_RS1 &amp;&amp; !ID_RS1_PC &amp;&amp; !ID_RS1_Z)
+                    ? WB_RD_VAL : ID_RF_DATA1;
+assign ID_RS2_FWD = (WB_D_RD != 5'b0 &amp;&amp; WB_D_RD == ID_RS2)
+                    ? WB_RD_VAL : ID_RF_DATA2;</pre>
+        <p style="font-size:.83em;color:#555;margin-top:4px;">
+          WB_RD_VAL は組み合わせ回路（<code>always @(*)</code>）で確定するため，
+          レジスタファイル書き込みと同クロックの ID 読み出しに転送可能．
+        </p>
+      </div>
+
+      <div style="margin-top:14px;">
+        <p style="font-weight:700;color:var(--navy);margin-bottom:6px;">経路② EX/MEM→EX フォワーディング（riscv.v 261〜264行）</p>
+        <pre style="background:#f0fff4;border-radius:4px;padding:10px;font-size:.80em;font-family:monospace;line-height:1.6;">// FWD_A_SEL=01: EX/MEMのWB値を現在のEXに転送（2命令差ハザード）
+// ※ LOAD命令（WB_MUX==01）とMUL命令は結果未確定のため除外
+assign FWD_A_SEL =
+  (EX_MEM_D_RD != 5'b0 &amp;&amp; EX_MEM_D_RD == ID_EX_RS1_NUM
+   &amp;&amp; EX_MEM_WB_MUX != 2'b01 &amp;&amp; !EX_MEM_IS_MUL) ? 2'b01 :  // ← ②
+  (MEM_WB_D_RD != 5'b0 &amp;&amp; MEM_WB_D_RD == ID_EX_RS1_NUM) ? 2'b10 :  // ← ③
+  2'b00;</pre>
+      </div>
+
+      <div style="margin-top:14px;">
+        <p style="font-weight:700;color:var(--navy);margin-bottom:6px;">経路③ MEM/WB→EX フォワーディング（同 263行）</p>
+        <pre style="background:#f0fff4;border-radius:4px;padding:10px;font-size:.80em;font-family:monospace;line-height:1.6;">// FWD_A_SEL=10: MEM/WBのWB_RD_VAL（LOADの読み出し結果等）を転送
+assign EX_FWD_A = (FWD_A_SEL == 2'b01) ? EX_MEM_WB_VAL :
+                  (FWD_A_SEL == 2'b10) ? WB_RD_VAL      :  // ← ③
+                                         ID_EX_RF_DATA1;</pre>
+        <p style="font-size:.83em;color:#555;margin-top:4px;">
+          RS2 にも同様の <code>FWD_B_SEL</code> が実装されている（269〜282行）．
+        </p>
+      </div>
+    </div>
+
+    <div class="card yellow" style="margin-top:12px;">
+      <div class="card-title">フォワーディング経路まとめ</div>
+      <table style="margin-top:8px;">
+        <thead><tr><th>経路</th><th>転送元</th><th>転送先</th><th>対象ハザード</th><th>制約</th></tr></thead>
+        <tbody>
+          <tr><td class="l">① WB→ID</td><td>WBステージ（WB_RD_VAL）</td><td>IDステージ</td><td>3命令差</td><td>なし</td></tr>
+          <tr><td class="l">② EX/MEM→EX</td><td>EX/MEMレジスタ</td><td>EXステージ</td><td>2命令差</td><td class="hlo">LOAD・MUL命令は除外</td></tr>
+          <tr><td class="l">③ MEM/WB→EX</td><td>MEM/WBレジスタ（WB_RD_VAL）</td><td>EXステージ</td><td>3命令差（EXで使用）</td><td>なし</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>実測値</h3>
+    <table>
+      <thead><tr><th>項目</th><th>値</th><th>逐次との比較</th></tr></thead>
+      <tbody>
+        <tr><td class="l">動作周波数</td><td class="hl">83.3 MHz（12 ns）</td><td>+67%</td></tr>
+        <tr><td class="l">実行クロック数</td><td>165,507</td><td>+39%（ストール・フラッシュ分）</td></tr>
+        <tr><td class="l">CPI</td><td class="hlo">1.3934</td><td class="hlo">+39%</td></tr>
+        <tr><td class="l">実行時間</td><td class="hl">1.986 ms</td><td><strong>−16%（1.20×高速）</strong></td></tr>
+        <tr><td class="l">LUT使用率</td><td class="hl">3.65%</td><td><strong>−88%（約1/8）</strong></td></tr>
+        <tr><td class="l">消費電力</td><td class="hl">0.225 W</td><td class="hl">−41%</td></tr>
+        <tr><td class="l">消費電力量 P×T</td><td class="hl">0.447 mJ</td><td class="hl"><strong>−51%</strong></td></tr>
+      </tbody>
+    </table>
+
+    <div class="card yellow">
+      <div class="card-title">なぜLUT使用率が激減したか？</div>
+      <p>
+        ソースコード冒頭の <code>IMEM_SIZE=2048 / DMEM_SIZE=2048</code>（各 2kW=8kB）が直接の原因．<br>
+        逐次・2段PL では <code>IMEM_SIZE=DMEM_SIZE=32768</code>（各 32kW=128kB） → Distributed RAM に<br>
+        各メモリが展開され <strong>16,428 LUT</strong> を消費していた．<br>
+        5段PLでは同容量を <strong>1,068 LUT</strong>（約1/15）に削減 → LUT合計 18,957 → 2,316 → 使用率 <strong>3.65%</strong>．<br>
+        消費電力の大幅削減（0.384 W → 0.225 W, −41%）もこのメモリ削減が主因である．
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     5. 3方式の総合比較
+     ============================================================ -->
+<section>
+  <div class="sec-hdr gray-hdr">
+    <span class="num" style="background:#fff;color:#3a3a4a;">4</span>
+    3方式の総合比較
+  </div>
+  <div class="sec-body">
+    <table>
+      <thead>
+        <tr>
+          <th>指標</th>
+          <th>逐次実行</th>
+          <th>2段パイプライン</th>
+          <th>5段パイプライン</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="l">動作周波数</td><td>50 MHz</td><td class="hl">71.4 MHz (+43%)</td><td class="hl">83.3 MHz (+67%)</td></tr>
+        <tr><td class="l">CPI</td><td>1.000</td><td class="hlo">1.151 (+15%)</td><td class="hlo">1.393 (+39%)</td></tr>
+        <tr><td class="l">実行時間</td><td>2.376 ms</td><td class="hl">1.914 ms (1.24×)</td><td class="hl">1.986 ms (1.20×)</td></tr>
+        <tr><td class="l">LUT使用率</td><td>29.90%</td><td>29.79%</td><td class="hl">3.65% (1/8)</td></tr>
+        <tr><td class="l">消費電力</td><td>0.384 W</td><td class="hlr">0.470 W (+22%)</td><td class="hl">0.225 W (−41%)</td></tr>
+        <tr><td class="l">消費電力量</td><td>0.912 mJ</td><td>0.900 mJ (−1.3%)</td><td class="hl">0.447 mJ (−51%)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>実行時間の比較</h3>
+    <div class="compare-bar">
+      <div class="bar-label">逐次実行</div>
+      <div class="bar-track"><div class="bar-fill" style="width:100%;background:#2980b9;">2.376 ms</div></div>
+      <div class="bar-val" style="color:#2980b9;">基準</div>
+    </div>
+    <div class="compare-bar">
+      <div class="bar-label">2段 パイプライン</div>
+      <div class="bar-track"><div class="bar-fill" style="width:80.6%;background:#27ae60;">1.914 ms</div></div>
+      <div class="bar-val" style="color:#27ae60;">1.24×</div>
+    </div>
+    <div class="compare-bar">
+      <div class="bar-label">5段 パイプライン</div>
+      <div class="bar-track"><div class="bar-fill" style="width:83.6%;background:#16a085;">1.986 ms</div></div>
+      <div class="bar-val" style="color:#16a085;">1.20×</div>
+    </div>
+
+    <h3>消費電力量の比較</h3>
+    <div class="compare-bar">
+      <div class="bar-label">逐次実行</div>
+      <div class="bar-track"><div class="bar-fill" style="width:100%;background:#2980b9;">0.912 mJ</div></div>
+      <div class="bar-val" style="color:#2980b9;">基準</div>
+    </div>
+    <div class="compare-bar">
+      <div class="bar-label">2段 パイプライン</div>
+      <div class="bar-track"><div class="bar-fill" style="width:98.7%;background:#e67e22;">0.900 mJ</div></div>
+      <div class="bar-val" style="color:#e67e22;">−1.3%</div>
+    </div>
+    <div class="compare-bar">
+      <div class="bar-label">5段 パイプライン</div>
+      <div class="bar-track"><div class="bar-fill" style="width:49%;background:#27ae60;">0.447 mJ</div></div>
+      <div class="bar-val" style="color:#27ae60;">−51%</div>
+    </div>
+
+    <h3>CPI増加の内訳（ハザード要因）</h3>
+    <div class="grid2">
+      <div class="card orange">
+        <div class="card-title">2段PL：CPI 1.1514（+15%）の原因</div>
+        <ul style="font-size:.87em;">
+          <li>データハザード → フォワーディングで<strong>ストールなし</strong></li>
+          <li>制御ハザード（分岐成立） → <em>1サイクルフラッシュ</em>のみ</li>
+        </ul>
+        <p style="font-size:.85em;margin-top:6px;">CPI増加はすべて分岐命令によるフラッシュが原因</p>
+      </div>
+      <div class="card orange">
+        <div class="card-title">5段PL：CPI 1.3934（+39%）の原因</div>
+        <ul style="font-size:.87em;">
+          <li>ALU→ALU ハザード → フォワーディングで<strong>ストールなし</strong></li>
+          <li>ロードユーズハザード → <em>1サイクルストール</em></li>
+          <li>MULユーズハザード → <em>1サイクルストール</em></li>
+          <li>制御ハザード（分岐成立） → <em>2サイクルフラッシュ</em>（2段PLの2倍）</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card green" style="margin-top:20px;">
+      <div class="card-title">結論</div>
+      <ul>
+        <li><strong>実行時間最短</strong>：2段パイプライン（1.914 ms，1.24×）</li>
+        <li><strong>消費電力量最小</strong>：5段パイプライン（0.447 mJ，−51%）</li>
+        <li><strong>回路面積最小</strong>：5段パイプライン（LUT 3.65%）</li>
+        <li>パイプライン化は <em>周波数↑</em> と <em>CPI↑</em> のトレードオフ——段数を増やせば必ず速くなるわけではない</li>
+        <li>5段PLのエネルギ改善は主に<strong>メモリ削減（IMEM/DMEM 32kW→2kW）</strong>による消費電力低減が支配的</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+</body>
+</html>
