@@ -5,10 +5,10 @@
 module riscv
   #(
     parameter IMEM_BASE = 32'h0000_0000,
-    parameter IMEM_SIZE = 2048,
+    parameter IMEM_SIZE = 32768,
     parameter IMEM_FILE = "prog.mif",
     parameter DMEM_BASE = 32'h0010_0000,
-    parameter DMEM_SIZE = 2048,
+    parameter DMEM_SIZE = 32768,
     parameter DMEM_FILE = "data.mif"
     )
   (
