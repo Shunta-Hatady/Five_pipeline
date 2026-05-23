@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>RISC-Vプロセッサの高速化設計と評価</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap');
+
+  :root {
+    --dark:   #1a1a2e;
+    --mid:    #16213e;
+    --accent: #0f3a5c;
+    --blue:   #008bd4;
+    --cyan:   #00d4ff;
+    --white:  #ffffff;
+    --lgray:  #aabbcc;
+    --yellow: #ffd700;
+    --green:  #00e676;
+    --red:    #ff4d4d;
+    --orange: #ffa500;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a14;
+    font-family: 'Noto Sans JP', 'Meiryo UI', 'メイリオ', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    user-select: none;
+  }
+
+  /* ===== スライドコンテナ ===== */
+  #deck {
+    position: relative;
+    width: min(96vw, 170vh);
+    aspect-ratio: 16 / 9;
+  }
+
+  .slide {
+    position: absolute; inset: 0;
+    background: var(--dark);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid #1e3a5a;
+    box-shadow: 0 0 60px #000a;
+  }
+  .slide.active { display: flex; }
+
+  /* ===== ヘッダーバー ===== */
+  .hdr {
+    background: var(--accent);
+    padding: .55em 1.1em .35em;
+    border-bottom: 3px solid var(--blue);
+    flex-shrink: 0;
+  }
+  .hdr h2 { font-size: 1.55em; font-weight: 700; color: var(--white); letter-spacing: .03em; }
+  .hdr .sub { font-size: .72em; color: var(--cyan); margin-top: .1em; }
+
+  /* ===== コンテンツ ===== */
+  .body {
+    flex: 1;
+    padding: .7em 1.1em .5em;
+    display: flex;
+    flex-direction: column;
+    gap: .45em;
+    overflow: hidden;
+  }
+
+  /* ===== ページ番号 ===== */
+  .pnum {
+    position: absolute;
+    bottom: .4em; right: .9em;
+    font-size: .62em;
+    color: var(--lgray);
+    opacity: .7;
+  }
+
+  /* ===== カード ===== */
+  .card {
+    background: var(--mid);
+    border: 1px solid var(--blue);
+    border-radius: 5px;
+    padding: .55em .85em;
+  }
+  .card.accent { background: var(--accent); }
+  .card-title {
+    font-size: .82em;
+    font-weight: 700;
+    color: var(--cyan);
+    margin-bottom: .3em;
+    border-left: 3px solid var(--blue);
+    padding-left: .45em;
+  }
+
+  /* ===== 箇条書き ===== */
+  .bullets { list-style: none; display: flex; flex-direction: column; gap: .28em; }
+  .bullets li { font-size: .78em; color: var(--white); display: flex; gap: .5em; line-height: 1.45; }
+  .bullets li .mark { color: var(--cyan); font-weight: 700; flex-shrink: 0; }
+
+  /* ===== テーブル ===== */
+  table { width: 100%; border-collapse: collapse; font-size: .74em; }
+  thead tr { background: var(--blue); }
+  thead th { padding: .4em .5em; color: var(--dark); font-weight: 700; text-align: center; }
+  tbody tr:nth-child(odd)  { background: var(--mid); }
+  tbody tr:nth-child(even) { background: var(--accent); }
+  tbody td { padding: .38em .5em; color: var(--white); text-align: center; vertical-align: middle; }
+  tbody td.left { text-align: left; }
+  .hl  { color: var(--yellow); font-weight: 700; }
+  .hlg { color: var(--green);  font-weight: 700; }
+  .hlc { color: var(--cyan);   font-weight: 700; }
+
+  /* ===== グリッドレイアウト ===== */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: .55em; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .55em; }
+  .col2l { display: grid; grid-template-columns: 58% 40%; gap: .55em; }
+  .col2r { display: grid; grid-template-columns: 48% 50%; gap: .55em; }
+
+  /* ===== バッジ ===== */
+  .badge {
+    display: inline-block;
+    background: var(--blue);
+    color: var(--dark);
+    font-size: .65em;
+    font-weight: 700;
+    border-radius: 3px;
+    padding: .1em .45em;
+    margin-right: .3em;
+  }
+
+  /* ===== 棒グラフ ===== */
+  .bar-wrap { display: flex; flex-direction: column; gap: .45em; }
+  .bar-row { display: flex; align-items: center; gap: .5em; font-size: .75em; }
+  .bar-label { color: var(--lgray); width: 7em; flex-shrink: 0; font-size: .88em; }
+  .bar-track { flex: 1; background: #1a2a3a; border-radius: 3px; height: 1.5em; overflow: hidden; }
+  .bar-fill  { height: 100%; border-radius: 3px; display: flex; align-items: center;
+               padding-left: .4em; font-weight: 700; color: var(--dark); font-size: .88em;
+               transition: width .6s ease; }
+  .bar-val   { color: var(--white); font-weight: 700; font-size: .9em; min-width: 4em; }
+
+  /* ===== パイプラインステージ図 ===== */
+  .stage-diagram { display: flex; flex-direction: column; align-items: center; gap: .18em; }
+  .stage-box {
+    background: var(--blue);
+    color: var(--dark);
+    font-weight: 700;
+    font-size: .73em;
+    border-radius: 4px;
+    padding: .4em 0;
+    width: 90%;
+    text-align: center;
+  }
+  .stage-arrow { color: var(--cyan); font-size: .9em; line-height: 1; }
+
+  /* ===== ステップカード ===== */
+  .step-card {
+    background: var(--mid);
+    border: 1px solid var(--blue);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .step-hdr {
+    background: var(--blue);
+    color: var(--dark);
+    font-size: .75em;
+    font-weight: 700;
+    padding: .3em .7em;
+  }
+  .step-body { padding: .45em .7em; font-size: .75em; color: var(--white); line-height: 1.55; }
+
+  /* ===== アジェンダアイテム ===== */
+  .agenda-item {
+    background: var(--mid);
+    border: 1px solid var(--blue);
+    border-radius: 5px;
+    padding: .45em .75em;
+    display: flex;
+    align-items: center;
+    gap: .6em;
+  }
+  .agenda-num { color: var(--cyan); font-weight: 900; font-size: .9em; flex-shrink: 0; min-width: 1.8em; }
+  .agenda-label { color: var(--white); font-weight: 700; font-size: .8em; }
+
+  /* ===== チェックリスト ===== */
+  .check-item {
+    background: var(--mid);
+    border-radius: 4px;
+    padding: .4em .8em;
+    font-size: .8em;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: .6em;
+  }
+  .check-item:nth-child(even) { background: var(--accent); }
+  .check-mark { color: var(--green); font-size: 1em; font-weight: 700; flex-shrink: 0; }
+
+  /* ===== 注釈 ===== */
+  .note { font-size: .65em; color: var(--lgray); font-style: italic; margin-top: .2em; }
+  .formula {
+    text-align: center;
+    font-size: .78em;
+    font-weight: 700;
+    color: var(--yellow);
+    padding: .35em;
+    background: #1a2030;
+    border-radius: 4px;
+    border: 1px solid #2a4060;
+  }
+  .result-highlight {
+    text-align: center;
+    font-size: .82em;
+    font-weight: 700;
+    color: var(--green);
+    padding: .25em;
+  }
+
+  /* ===== タイトルスライド ===== */
+  #s1 { justify-content: center; align-items: center; }
+  .title-wrap {
+    text-align: center;
+    border-top: 3px solid var(--blue);
+    border-bottom: 3px solid var(--blue);
+    background: var(--accent);
+    padding: 1.2em 2em;
+    width: 90%;
+  }
+  .title-main {
+    font-size: 1.95em;
+    font-weight: 900;
+    color: var(--white);
+    letter-spacing: .04em;
+    line-height: 1.3;
+  }
+  .title-sub {
+    font-size: .9em;
+    color: var(--cyan);
+    margin-top: .5em;
+  }
+  .title-info {
+    font-size: .7em;
+    color: var(--lgray);
+    margin-top: 1.2em;
+  }
+
+  /* ===== ナビゲーション ===== */
+  #nav {
+    display: flex;
+    align-items: center;
+    gap: 1.2em;
+    margin-top: .7em;
+    color: var(--lgray);
+    font-size: .85em;
+  }
+  .nav-btn {
+    background: var(--accent);
+    color: var(--white);
+    border: 1px solid var(--blue);
+    border-radius: 5px;
+    padding: .4em 1.2em;
+    cursor: pointer;
+    font-size: .9em;
+    font-family: inherit;
+    transition: background .2s;
+  }
+  .nav-btn:hover { background: var(--blue); color: var(--dark); }
+  .nav-btn:disabled { opacity: .3; cursor: default; }
+  #slide-counter { min-width: 5em; text-align: center; }
+
+  /* ===== ドット ===== */
+  #dots { display: flex; gap: .35em; flex-wrap: wrap; justify-content: center; max-width: min(96vw,170vh); margin-top: .3em; }
+  .dot {
+    width: .55em; height: .55em;
+    border-radius: 50%;
+    background: #2a3a50;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .dot.active { background: var(--blue); }
+</style>
+</head>
+<body>
+
+<div id="deck">
+
+  <!-- ===== スライド 1: タイトル ===== -->
+  <div class="slide active" id="s1">
+    <div class="title-wrap">
+      <div class="title-main">RISC-Vプロセッサの高速化設計と評価</div>
+      <div class="title-sub">パイプライン処理による実行時間・消費電力の比較</div>
+    </div>
+    <div class="title-info">コンピュータアーキテクチャ &nbsp;グループ発表 &nbsp;/&nbsp; 2025年</div>
+    <span class="pnum">1 / 14</span>
+  </div>
+
+  <!-- ===== スライド 2: 目次 ===== -->
+  <div class="slide" id="s2">
+    <div class="hdr"><h2>目次</h2></div>
+    <div class="body">
+      <div class="grid2" style="flex:1; gap:.42em;">
+        <div class="agenda-item"><span class="agenda-num">01</span><span class="agenda-label">目的</span></div>
+        <div class="agenda-item"><span class="agenda-num">05</span><span class="agenda-label">評価結果</span></div>
+        <div class="agenda-item"><span class="agenda-num">02</span><span class="agenda-label">高速化設計の方針</span></div>
+        <div class="agenda-item"><span class="agenda-num">06</span><span class="agenda-label">考察</span></div>
+        <div class="agenda-item"><span class="agenda-num">03</span><span class="agenda-label">ソートアルゴリズムの比較</span></div>
+        <div class="agenda-item"><span class="agenda-num">07</span><span class="agenda-label">感想・役割分担・エフォート</span></div>
+        <div class="agenda-item" style="grid-column:1/3;"><span class="agenda-num">04</span><span class="agenda-label">高速化設計の詳細（逐次 / 2段PL / 5段PL）</span></div>
+      </div>
+    </div>
+    <span class="pnum">2 / 14</span>
+  </div>
+
+  <!-- ===== スライド 3: 目的 ===== -->
+  <div class="slide" id="s3">
+    <div class="hdr"><h2>目的</h2><div class="sub">01 / Purpose</div></div>
+    <div class="body">
+      <div class="card" style="font-size:.83em; color:var(--white); line-height:1.6;">
+        FPGA上にRISC-Vプロセッサを実装し，パイプライン処理を導入することで<br>
+        <strong style="color:var(--cyan)">実行時間・消費電力・消費エネルギを改善すること</strong>を目的とする．
+      </div>
+      <ul class="bullets" style="flex:1; justify-content:center;">
+        <li><span class="mark">▶</span>逐次実行CPU（選択ソート・クイックソート）を基準として定量比較する</li>
+        <li><span class="mark">▶</span>2段パイプライン / 5段パイプラインの高速化効果を実測データで評価する</li>
+        <li><span class="mark">▶</span>評価指標：実行時間・実行クロック数・CPI・回路資源利用状況・消費電力・消費エネルギ</li>
+        <li><span class="mark">▶</span>実装プラットフォーム：FPGA（Xilinx Artix-7），設計言語：Verilog HDL</li>
+      </ul>
+    </div>
+    <span class="pnum">3 / 14</span>
+  </div>
+
+  <!-- ===== スライド 4: 高速化設計の方針 ===== -->
+  <div class="slide" id="s4">
+    <div class="hdr"><h2>高速化設計の方針</h2><div class="sub">02 / Design Policy</div></div>
+    <div class="body">
+      <div class="grid3" style="flex:1;">
+        <div class="step-card">
+          <div class="step-hdr">Step 1 &nbsp; アルゴリズム選択</div>
+          <div class="step-body">
+            選択ソートとクイックソートを実装し，<br>
+            実行命令数の少ない方を採用する．<br><br>
+            アルゴリズムの改善が最も根本的な高速化手段となる．
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-hdr">Step 2 &nbsp; 動作周波数の向上</div>
+          <div class="step-body">
+            クリティカルパスを短縮することで<br>
+            より高い周波数での動作を実現する．<br><br>
+            周波数 ∝ 1 / クリティカルパス長
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-hdr">Step 3 &nbsp; パイプライン化</div>
+          <div class="step-body">
+            命令実行を複数ステージに分割し，<br>
+            複数の命令を並列処理することで<br>
+            スループットを向上させる．
+          </div>
+        </div>
+      </div>
+      <div class="note" style="text-align:center;">
+        ※ パイプライン段数増加 → 高周波動作が可能になる一方，ハザードによるストールでCPIが増加するトレードオフが生じる
+      </div>
+    </div>
+    <span class="pnum">4 / 14</span>
+  </div>
+
+  <!-- ===== スライド 5: ソートアルゴリズムの比較 ===== -->
+  <div class="slide" id="s5">
+    <div class="hdr"><h2>ソートアルゴリズムの比較</h2><div class="sub">03 / Algorithm Comparison</div></div>
+    <div class="body">
+      <table>
+        <thead>
+          <tr>
+            <th>指標</th>
+            <th>選択ソート（逐次）</th>
+            <th>クイックソート（逐次）</th>
+            <th>優劣</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>実行命令数</td><td>3,429,518</td><td class="hlg">118,777</td><td class="hl">クイック 約29倍少</td></tr>
+          <tr><td>動作周波数</td><td>50 MHz</td><td>50 MHz</td><td>—</td></tr>
+          <tr><td>実行時間</td><td>68.59 ms</td><td class="hlg">2.376 ms</td><td class="hl">クイック 約29倍高速</td></tr>
+          <tr><td>消費電力（総）</td><td>0.394 W</td><td>0.384 W</td><td>ほぼ同等</td></tr>
+          <tr><td>LUT使用率</td><td>29.90%</td><td>29.90%</td><td>同等</td></tr>
+        </tbody>
+      </table>
+      <div class="result-highlight" style="font-size:.88em; background:var(--mid); border-radius:4px; padding:.4em; margin-top:.2em;">
+        → 実行命令数が約29倍少ない <strong style="color:var(--cyan)">クイックソート</strong> をパイプライン化の対象として採用
+      </div>
+    </div>
+    <span class="pnum">5 / 14</span>
+  </div>
+
+  <!-- ===== スライド 6: 逐次CPU ===== -->
+  <div class="slide" id="s6">
+    <div class="hdr"><h2>高速化設計の詳細 ① 逐次実行CPU</h2><div class="sub">04 / Sequential CPU</div></div>
+    <div class="body">
+      <div class="card" style="flex:1;">
+        <div class="card-title">設計概要</div>
+        <ul class="bullets">
+          <li><span class="mark">●</span>RISC-V（RV32I）命令セットを実装したシングルサイクルCPU</li>
+          <li><span class="mark">●</span>1クロックで1命令を完了（CPI ≈ 1.0）</li>
+          <li><span class="mark">●</span>動作周波数：<strong class="hlc">50 MHz</strong>（クリティカルパスが長く高周波化に制限あり）</li>
+          <li><span class="mark">●</span>命令メモリ・データメモリを内蔵（Distributed RAM，各 32kW = 128kB）</li>
+          <li><span class="mark">●</span>クイックソートで 118,777 命令，実行時間 <strong class="hlc">2.376 ms</strong></li>
+          <li><span class="mark">●</span>設計がシンプルで検証しやすく，パイプライン化の<strong style="color:var(--yellow)">ベースライン</strong>として機能</li>
+        </ul>
+      </div>
+      <div class="formula">実行時間 = 実行命令数 × CPI × クロック周期 &nbsp;=&nbsp; 118,777 × 1.0 × 20 ns &nbsp;= <strong>2.376 ms</strong></div>
+    </div>
+    <span class="pnum">6 / 14</span>
+  </div>
+
+  <!-- ===== スライド 7: 2段パイプライン ===== -->
+  <div class="slide" id="s7">
+    <div class="hdr"><h2>高速化設計の詳細 ② 2段パイプラインCPU</h2><div class="sub">04 / 2-Stage Pipeline</div></div>
+    <div class="body">
+      <div class="col2l" style="flex:1;">
+        <div class="card">
+          <div class="card-title">設計ポイント</div>
+          <ul class="bullets">
+            <li><span class="mark">●</span>IF（命令フェッチ）と EX（実行）の2ステージ構成</li>
+            <li><span class="mark">●</span>パイプラインレジスタで段間を分割しクリティカルパスを短縮</li>
+            <li><span class="mark">●</span>クロック周期：<strong class="hlc">14 ns → 71.4 MHz</strong>（逐次比 +43%）</li>
+            <li><span class="mark">●</span>ハザード対策：データハザード発生時にストール挿入</li>
+            <li><span class="mark">●</span>CPI：<strong class="hl">1.1514</strong>（ストールにより若干増加）</li>
+            <li><span class="mark">●</span>実行時間：<strong class="hlg">1.914 ms</strong>（逐次比 <strong>1.24×</strong> 高速）</li>
+          </ul>
+        </div>
+        <div class="card accent">
+          <div class="card-title">パイプライン構造</div>
+          <div class="stage-diagram" style="margin-top:.5em;">
+            <div class="stage-box" style="background:var(--blue);">Stage 1 &nbsp; IF<br><small style="font-weight:400;">命令フェッチ</small></div>
+            <div class="stage-arrow">↓</div>
+            <div class="stage-box" style="background:var(--green); color:#000;">Stage 2 &nbsp; EX / MEM / WB<br><small style="font-weight:400;">実行・メモリ・ライトバック</small></div>
+          </div>
+          <div class="formula" style="margin-top:.6em; font-size:.68em;">
+            118,777 × 1.151 × 14 ns = <strong>1.914 ms</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span class="pnum">7 / 14</span>
+  </div>
+
+  <!-- ===== スライド 8: 5段パイプライン ===== -->
+  <div class="slide" id="s8">
+    <div class="hdr"><h2>高速化設計の詳細 ③ 5段パイプラインCPU</h2><div class="sub">04 / 5-Stage Pipeline</div></div>
+    <div class="body">
+      <div class="col2l" style="flex:1;">
+        <div class="card">
+          <div class="card-title">設計ポイント</div>
+          <ul class="bullets">
+            <li><span class="mark">●</span>IF → ID → EX → MEM → WB の5ステージ構成</li>
+            <li><span class="mark">●</span>各ステージ間にパイプラインレジスタを配置</li>
+            <li><span class="mark">●</span>クロック周期：<strong class="hlc">12 ns → 83.3 MHz</strong>（逐次比 +67%）</li>
+            <li><span class="mark">●</span>フォワーディングによるデータハザード軽減</li>
+            <li><span class="mark">●</span>CPI：<strong class="hl">1.3934</strong>（ストール・フラッシュで増加）</li>
+            <li><span class="mark">●</span>LUT使用率：<strong class="hlg">3.65%</strong>（メモリ構成を大幅最適化）</li>
+          </ul>
+        </div>
+        <div class="card accent">
+          <div class="card-title">5段パイプライン構造</div>
+          <div class="stage-diagram" style="margin-top:.4em;">
+            <div class="stage-box">IF &nbsp; 命令フェッチ</div>
+            <div class="stage-arrow">↓</div>
+            <div class="stage-box">ID &nbsp; 命令デコード</div>
+            <div class="stage-arrow">↓</div>
+            <div class="stage-box">EX &nbsp; 演算実行</div>
+            <div class="stage-arrow">↓</div>
+            <div class="stage-box">MEM &nbsp; メモリアクセス</div>
+            <div class="stage-arrow">↓</div>
+            <div class="stage-box">WB &nbsp; ライトバック</div>
+          </div>
+        </div>
+      </div>
+      <div class="formula">118,777 × 1.393 × 12 ns = <strong>1.986 ms</strong></div>
+    </div>
+    <span class="pnum">8 / 14</span>
+  </div>
+
+  <!-- ===== スライド 9: 評価（実行時間・CPI） ===== -->
+  <div class="slide" id="s9">
+    <div class="hdr"><h2>評価結果：実行時間・CPI・動作周波数</h2><div class="sub">05 / Performance Results</div></div>
+    <div class="body">
+      <table>
+        <thead>
+          <tr>
+            <th>実装</th>
+            <th>命令数</th>
+            <th>動作周波数</th>
+            <th>実行クロック数</th>
+            <th>CPI</th>
+            <th>実行時間</th>
+            <th>高速化率</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="left">クイック 逐次</td>
+            <td>118,777</td><td>50 MHz</td><td>118,778</td>
+            <td>1.000</td><td>2.376 ms</td><td class="hlc">基準</td>
+          </tr>
+          <tr>
+            <td class="left">クイック 2段PL</td>
+            <td>118,777</td><td class="hlc">71.4 MHz</td><td>136,760</td>
+            <td class="hl">1.151</td><td class="hlg">1.914 ms</td><td class="hlg">1.24×</td>
+          </tr>
+          <tr>
+            <td class="left">クイック 5段PL</td>
+            <td>118,777</td><td class="hlc">83.3 MHz</td><td>165,507</td>
+            <td class="hl">1.393</td><td class="hlg">1.986 ms</td><td class="hlg">1.20×</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="formula">実行時間 = 実行命令数 × CPI × クロック周期</div>
+      <div class="note" style="text-align:center;">
+        2段PL：周波数向上（+43%）がCPI増加（+15%）を上回り最速．
+        5段PLはさらに高周波（+67%）だがハザード増加でCPIが大幅上昇（+39%）し改善幅は約20%にとどまった．
+      </div>
+    </div>
+    <span class="pnum">9 / 14</span>
+  </div>
+
+  <!-- ===== スライド 10: 評価（回路資源） ===== -->
+  <div class="slide" id="s10">
+    <div class="hdr"><h2>評価結果：回路資源利用状況</h2><div class="sub">05 / Resource Utilization</div></div>
+    <div class="body">
+      <table>
+        <thead>
+          <tr>
+            <th>実装</th>
+            <th>Slice LUTs</th>
+            <th>（Logic）</th>
+            <th>（Memory）</th>
+            <th>Registers</th>
+            <th>LUT使用率</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="left">クイック 逐次</td>
+            <td>18,957</td><td>2,529</td><td>16,428</td><td>64</td><td>29.90%</td>
+          </tr>
+          <tr>
+            <td class="left">2段 パイプライン</td>
+            <td>18,888</td><td>2,460</td><td>16,428</td><td>246</td><td>29.79%</td>
+          </tr>
+          <tr>
+            <td class="left">5段 パイプライン</td>
+            <td class="hl">2,316</td><td>1,248</td><td class="hl">1,068</td><td>657</td><td class="hlg">3.65%</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="card" style="margin-top:.3em;">
+        <div class="card-title">LUT使用率の比較</div>
+        <div class="bar-wrap" style="margin-top:.3em;">
+          <div class="bar-row">
+            <span class="bar-label">クイック 逐次</span>
+            <div class="bar-track"><div class="bar-fill" style="width:100%; background:var(--blue);">29.90%</div></div>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">2段 PL</span>
+            <div class="bar-track"><div class="bar-fill" style="width:99.6%; background:var(--blue);">29.79%</div></div>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">5段 PL</span>
+            <div class="bar-track"><div class="bar-fill" style="width:12.2%; background:var(--green); color:var(--dark);">3.65%</div></div>
+            <span class="bar-val" style="color:var(--green);">← 約1/8</span>
+          </div>
+        </div>
+      </div>
+      <div class="result-highlight">5段パイプラインはメモリ構成の最適化により LUT使用率が 29.90% → 3.65% へ激減</div>
+    </div>
+    <span class="pnum">10 / 14</span>
+  </div>
+
+  <!-- ===== スライド 11: 評価（消費電力・エネルギ） ===== -->
+  <div class="slide" id="s11">
+    <div class="hdr"><h2>評価結果：消費電力・消費エネルギ</h2><div class="sub">05 / Power & Energy</div></div>
+    <div class="body">
+      <div class="col2r" style="flex:1;">
+        <!-- 左: 電力表 -->
+        <div>
+          <div style="font-size:.75em; font-weight:700; color:var(--cyan); margin-bottom:.35em;">消費電力 (W)</div>
+          <table>
+            <thead><tr><th>実装</th><th>総電力</th><th>動的電力</th><th>静的電力</th></tr></thead>
+            <tbody>
+              <tr><td class="left">クイック逐次</td><td>0.384</td><td>0.278</td><td>0.105</td></tr>
+              <tr><td class="left">2段PL</td><td class="hl">0.470</td><td class="hl">0.364</td><td>0.105</td></tr>
+              <tr><td class="left">5段PL</td><td class="hlg">0.225</td><td class="hlg">0.120</td><td>0.105</td></tr>
+            </tbody>
+          </table>
+          <div class="note" style="margin-top:.4em;">静的電力はすべて 0.105 W で共通</div>
+        </div>
+        <!-- 右: エネルギ棒グラフ -->
+        <div class="card" style="display:flex; flex-direction:column; gap:.5em;">
+          <div class="card-title">消費エネルギ (電力 × 実行時間)</div>
+          <div class="bar-wrap" style="flex:1; justify-content:center;">
+            <div class="bar-row">
+              <span class="bar-label">クイック逐次</span>
+              <div class="bar-track"><div class="bar-fill" style="width:100%; background:var(--blue);">0.912 mJ</div></div>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">2段PL</span>
+              <div class="bar-track"><div class="bar-fill" style="width:98.7%; background:var(--blue);">0.900 mJ</div></div>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">5段PL</span>
+              <div class="bar-track"><div class="bar-fill" style="width:49.0%; background:var(--green); color:var(--dark);">0.447 mJ</div></div>
+              <span class="bar-val" style="color:var(--green);">約51%減</span>
+            </div>
+          </div>
+          <div class="result-highlight" style="font-size:.75em;">5段PLは消費エネルギを逐次比で約51%削減</div>
+        </div>
+      </div>
+    </div>
+    <span class="pnum">11 / 14</span>
+  </div>
+
+  <!-- ===== スライド 12: 考察 ===== -->
+  <div class="slide" id="s12">
+    <div class="hdr"><h2>考察</h2><div class="sub">06 / Discussion</div></div>
+    <div class="body" style="gap:.5em;">
+      <div class="card" style="flex:1;">
+        <div class="card-title">実行時間の改善</div>
+        <div style="font-size:.78em; color:var(--white); line-height:1.55;">
+          2段PLは周波数向上（+43%）がCPI増加（+15%）を上回り実行時間を約<strong class="hlg">20%短縮</strong>（1.24×）できた．<br>
+          5段PLはさらに高周波（+67%）だが，ハザードによるCPIの大幅増加（+39%）で改善幅は約<strong class="hlg">20%</strong>（1.20×）にとどまった．
+        </div>
+      </div>
+      <div class="card" style="flex:1;">
+        <div class="card-title">消費電力・エネルギの改善</div>
+        <div style="font-size:.78em; color:var(--white); line-height:1.55;">
+          5段PLはメモリ構成の最適化（LUT 約1/8）により動的電力を<strong class="hlg">0.278 → 0.120 W</strong>に大幅削減．<br>
+          消費エネルギは逐次比で<strong class="hlg">約51%削減</strong>（0.912 → 0.447 mJ）と大きな効果が得られた．
+        </div>
+      </div>
+      <div class="card" style="flex:1;">
+        <div class="card-title">トレードオフの整理</div>
+        <div style="font-size:.78em; color:var(--white); line-height:1.55;">
+          パイプライン段数増加は①<strong class="hlc">動作周波数の向上</strong> と ②<strong class="hl">CPIの増加</strong> のトレードオフを伴う．<br>
+          今回の5段PLはメモリ削減効果が支配的で，<strong class="hlg">電力・エネルギ面では最良</strong>の結果を示した．
+        </div>
+      </div>
+    </div>
+    <span class="pnum">12 / 14</span>
+  </div>
+
+  <!-- ===== スライド 13: まとめ ===== -->
+  <div class="slide" id="s13">
+    <div class="hdr"><h2>まとめ</h2><div class="sub">06 / Summary</div></div>
+    <div class="body" style="gap:.42em;">
+      <div class="check-item"><span class="check-mark">✓</span>クイックソートは選択ソートに比べ実行命令数が約29倍少なく，パイプライン化の対象アルゴリズムに採用</div>
+      <div class="check-item"><span class="check-mark">✓</span>2段パイプライン：実行時間を約20%短縮 （2.376 ms → 1.914 ms，<strong>1.24×高速化</strong>）</div>
+      <div class="check-item"><span class="check-mark">✓</span>5段パイプライン：消費エネルギを約51%削減（0.912 mJ → 0.447 mJ）</div>
+      <div class="check-item"><span class="check-mark">✓</span>5段パイプラインはLUT使用率を 29.90% → 3.65% に大幅削減（約1/8）</div>
+      <div class="check-item"><span class="check-mark">✓</span>パイプライン化は周波数向上（高速化）とCPI増加（効率低下）のトレードオフを伴う</div>
+      <div class="card" style="margin-top:.3em; text-align:center; background:#1a2030; border-color:var(--yellow);">
+        <span style="font-size:.85em; font-weight:700; color:var(--yellow);">
+          → 目的・用途に応じてアルゴリズムとアーキテクチャを選択することが重要
+        </span>
+      </div>
+    </div>
+    <span class="pnum">13 / 14</span>
+  </div>
+
+  <!-- ===== スライド 14: 感想・役割分担・エフォート ===== -->
+  <div class="slide" id="s14">
+    <div class="hdr"><h2>感想・役割分担・エフォート</h2><div class="sub">07 / Impressions &amp; Contributions</div></div>
+    <div class="body">
+      <table>
+        <thead>
+          <tr>
+            <th>メンバー</th>
+            <th>担当内容</th>
+            <th>感想</th>
+            <th>エフォート</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>メンバー A</td>
+            <td class="left">逐次CPUの設計・検証<br>クイックソート実装</td>
+            <td class="left">パイプライン設計の基礎を理解できた</td>
+            <td>25%</td>
+          </tr>
+          <tr>
+            <td>メンバー B</td>
+            <td class="left">2段パイプライン設計<br>ハザード制御実装</td>
+            <td class="left">ストールの実装が最も難しかった</td>
+            <td>25%</td>
+          </tr>
+          <tr>
+            <td>メンバー C</td>
+            <td class="left">5段パイプライン設計<br>フォワーディング実装</td>
+            <td class="left">電力削減の効果が大きく達成感があった</td>
+            <td>25%</td>
+          </tr>
+          <tr>
+            <td>メンバー D</td>
+            <td class="left">評価・測定<br>スライド・レポート作成</td>
+            <td class="left">数値で結果を確認でき理解が深まった</td>
+            <td>25%</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="note" style="margin-top:.4em;">
+        ※ 各メンバーの氏名・感想・エフォートは実際の内容に書き換えてください
+      </div>
+    </div>
+    <span class="pnum">14 / 14</span>
+  </div>
+
+</div><!-- #deck -->
+
+<!-- ===== ナビゲーション ===== -->
+<div id="nav">
+  <button class="nav-btn" id="prevBtn" onclick="go(-1)" disabled>◀ 前へ</button>
+  <span id="slide-counter">1 / 14</span>
+  <button class="nav-btn" id="nextBtn" onclick="go(1)">次へ ▶</button>
+</div>
+<div id="dots"></div>
+
+<script>
+  const TOTAL = 14;
+  let cur = 1;
+
+  const dots = document.getElementById('dots');
+  for (let i = 1; i <= TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 1 ? ' active' : '');
+    d.onclick = () => go(i - cur);
+    dots.appendChild(d);
+  }
+
+  function go(delta) {
+    const next = cur + delta;
+    if (next < 1 || next > TOTAL) return;
+    document.getElementById('s' + cur).classList.remove('active');
+    dots.children[cur - 1].classList.remove('active');
+    cur = next;
+    document.getElementById('s' + cur).classList.add('active');
+    dots.children[cur - 1].classList.add('active');
+    document.getElementById('slide-counter').textContent = cur + ' / ' + TOTAL;
+    document.getElementById('prevBtn').disabled = cur === 1;
+    document.getElementById('nextBtn').disabled = cur === TOTAL;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown'  || e.key === ' ') go(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                      go(-1);
+  });
+</script>
+</body>
+</html>

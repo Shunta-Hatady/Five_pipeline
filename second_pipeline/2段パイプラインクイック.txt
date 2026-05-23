@@ -1,0 +1,46 @@
+クイックソート2段パイプライン
+実行命令数		118777
+周期			14.0ns
+動作周波数		MHZ
+遅延結果		15ns
+100MHZ動作時の実行時間	1367615
+実行サイクル数		(1367615ns-15ns)/10ns=136760
+CPI			136760/118777=1.15140
+実行時間		118777*14ns*1.15140=1,913,972.578ns →1.913972ms
+回路資源利用状況
+1. Slice Logic
+--------------
+
++----------------------------+-------+-------+------------+-----------+-------+
+|          Site Type         |  Used | Fixed | Prohibited | Available | Util% |
++----------------------------+-------+-------+------------+-----------+-------+
+| Slice LUTs                 | 18888 |     0 |          0 |     63400 | 29.79 |
+|   LUT as Logic             |  2460 |     0 |          0 |     63400 |  3.88 |
+|   LUT as Memory            | 16428 |     0 |          0 |     19000 | 86.46 |
+|     LUT as Distributed RAM | 16428 |     0 |            |           |       |
+|     LUT as Shift Register  |     0 |     0 |            |           |       |
+| Slice Registers            |   246 |     0 |          0 |    126800 |  0.19 |
+|   Register as Flip Flop    |   214 |     0 |          0 |    126800 |  0.17 |
+|   Register as Latch        |    32 |     0 |          0 |    126800 |  0.03 |
+| F7 Muxes                   |  8761 |     0 |          0 |     31700 | 27.64 |
+| F8 Muxes                   |  4352 |     0 |          0 |     15850 | 27.46 |
++----------------------------+-------+-------+------------+-----------+-------+	
+消費電力	
+1. Summary
+----------
+
++--------------------------+--------------+
+| Total On-Chip Power (W)  | 0.470        |
+| Design Power Budget (W)  | Unspecified* |
+| Power Budget Margin (W)  | NA           |
+| Dynamic (W)              | 0.364        |
+| Device Static (W)        | 0.105        |
+| Effective TJA (C/W)      | 4.6          |
+| Max Ambient (C)          | 82.9         |
+| Junction Temperature (C) | 27.1         |
+| Confidence Level         | Medium       |
+| Setting File             | ---          |
+| Simulation Activity File | ---          |
+| Design Nets Matched      | NA           |
++--------------------------+--------------+	
+実行時間

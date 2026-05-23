@@ -1,0 +1,49 @@
+クイック逐次
+100MHz時のリセット期間を含む実行時間 1187785
+実行命令数：118777
+実行サイクル数：1187785-15 / 10 = 118777.5
+CPI:1.00001262...
+周期：20ns
+動作周波数：50MHz
+実行時間：118777.5 ✕ 20ns = 2.376 ms
+
+回路資源利用状況
+1. Slice Logic
+--------------
+
++----------------------------+-------+-------+------------+-----------+-------+
+|          Site Type         |  Used | Fixed | Prohibited | Available | Util% |
++----------------------------+-------+-------+------------+-----------+-------+
+| Slice LUTs                 | 18957 |     0 |          0 |     63400 | 29.90 |
+|   LUT as Logic             |  2529 |     0 |          0 |     63400 |  3.99 |
+|   LUT as Memory            | 16428 |     0 |          0 |     19000 | 86.46 |
+|     LUT as Distributed RAM | 16428 |     0 |            |           |       |
+|     LUT as Shift Register  |     0 |     0 |            |           |       |
+| Slice Registers            |    64 |     0 |          0 |    126800 |  0.05 |
+|   Register as Flip Flop    |    32 |     0 |          0 |    126800 |  0.03 |
+|   Register as Latch        |    32 |     0 |          0 |    126800 |  0.03 |
+| F7 Muxes                   |  8761 |     0 |          0 |     31700 | 27.64 |
+| F8 Muxes                   |  4352 |     0 |          0 |     15850 | 27.46 |
++----------------------------+-------+-------+------------+-----------+-------+
+* Warning! LUT value is adjusted to account for LUT combining.
+
+
+消費電力
+1. Summary
+----------
+
++--------------------------+--------------+
+| Total On-Chip Power (W)  | 0.384        |
+| Design Power Budget (W)  | Unspecified* |
+| Power Budget Margin (W)  | NA           |
+| Dynamic (W)              | 0.278        |
+| Device Static (W)        | 0.105        |
+| Effective TJA (C/W)      | 4.6          |
+| Max Ambient (C)          | 83.2         |
+| Junction Temperature (C) | 26.8         |
+| Confidence Level         | Medium       |
+| Setting File             | ---          |
+| Simulation Activity File | ---          |
+| Design Nets Matched      | NA           |
++--------------------------+--------------+
+* Specify Design Power Budget using, set_operating_conditions -design_power_budget <value in Watts>
