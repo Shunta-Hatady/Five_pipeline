@@ -534,7 +534,7 @@ td.l { text-align: left; }
           <li>LOAD-USE・MUL-USE：各 <em>1サイクルストール</em></li>
           <li>分岐成立：<em>2サイクルフラッシュ</em>（IF・IDの2段分）</li>
           <li>MUL → MEMステージで DSP48E1 推論，DIV/REM は未実装</li>
-          <li><code>IMEM_SIZE = DMEM_SIZE = 2048</code>（2kW = 8kB）→ LUT 激減</li>
+          <li><code>IMEM_SIZE = DMEM_SIZE = 32768</code>（32kW = 128kB，逐次・2段PLと同一）</li>
         </ul>
         <h3>実測値</h3>
         <table>
@@ -543,9 +543,9 @@ td.l { text-align: left; }
             <tr><td class="l">動作周波数</td><td class="hl">83.3 MHz（12 ns）</td><td>+67%</td></tr>
             <tr><td class="l">CPI</td><td class="hlo">1.3934</td><td>+39%</td></tr>
             <tr><td class="l">実行時間</td><td class="hl">1.986 ms</td><td class="hl"><strong>1.20×</strong></td></tr>
-            <tr><td class="l">LUT使用率</td><td class="hl">3.65%</td><td class="hl">−88%（1/8）</td></tr>
-            <tr><td class="l">消費電力</td><td class="hl">0.225 W</td><td class="hl">−41%</td></tr>
-            <tr><td class="l">消費電力量</td><td class="hl">0.447 mJ</td><td class="hl"><strong>−51%</strong></td></tr>
+            <tr><td class="l">LUT使用率</td><td class="hlo">30.28%</td><td>+1%（同等）</td></tr>
+            <tr><td class="l">消費電力</td><td class="hlo">0.475 W</td><td class="hlo">+24%</td></tr>
+            <tr><td class="l">消費電力量</td><td>0.943 mJ</td><td>+3%</td></tr>
           </tbody>
         </table>
         <div class="formula" style="font-size:12px;margin-top:8px;">
@@ -616,7 +616,7 @@ td.l { text-align: left; }
       <tbody>
         <tr><td class="l">クイック 逐次</td><td>18,957</td><td>2,529</td><td class="hlr">16,428</td><td>64</td><td class="hlo">29.90%</td></tr>
         <tr><td class="l">2段パイプライン</td><td>18,888</td><td>2,460</td><td class="hlr">16,428</td><td>246</td><td class="hlo">29.79%</td></tr>
-        <tr><td class="l">5段パイプライン</td><td class="hl">2,316</td><td>1,248</td><td class="hl">1,068</td><td>657</td><td class="hl"><strong>3.65%</strong></td></tr>
+        <tr><td class="l">5段パイプライン</td><td>19,195</td><td>2,767</td><td>16,428</td><td>693</td><td>30.28%</td></tr>
       </tbody>
     </table>
     <div class="g2" style="gap:16px;margin-top:14px;">
@@ -634,18 +634,18 @@ td.l { text-align: left; }
         </div>
         <div class="br">
           <div class="bl">5段PL</div>
-          <div class="bt"><div class="bf" style="width:12.2%;background:#27ae60;">3.65%</div></div>
-          <div class="bv" style="color:#27ae60;"><strong>約1/8</strong></div>
+          <div class="bt"><div class="bf" style="width:100%;background:#d35400;">30.28%</div></div>
+          <div class="bv" style="color:#d35400;">同等</div>
         </div>
       </div>
       <div>
-        <h3>なぜ5段PLだけ激減？</h3>
+        <h3>3実装のLUT比較</h3>
         <div class="card" style="font-size:12px;">
-          <div class="ct">ソースコードのメモリサイズ</div>
-          逐次・2段PL：<code>IMEM_SIZE = DMEM_SIZE = 32768</code>（32kW = 128kB）<br>
-          5段PL　　　：<code>IMEM_SIZE = DMEM_SIZE = 2048</code>（<strong>2kW = 8kB，1/16</strong>）<br><br>
-          Memory LUT：<span class="hlr">16,428</span> → <span class="hl">1,068</span>（約1/15）に激減<br>
-          → 全体 LUT 使用率が <span class="hlo">29.90%</span> → <span class="hl">3.65%</span> へ
+          <div class="ct">メモリサイズは全実装で共通</div>
+          全実装：<code>IMEM_SIZE = DMEM_SIZE = 32768</code>（32kW = 128kB）<br><br>
+          Memory LUT：3実装とも <span class="hlr">16,428</span> で同等<br>
+          → LUT 使用率はほぼ同等（約29〜30%）<br>
+          5段PL のレジスタ増（64 → 693）はパイプラインレジスタが原因
         </div>
       </div>
     </div>
@@ -672,8 +672,8 @@ td.l { text-align: left; }
           <td>0.470×1.914 = <strong>0.900 mJ</strong></td><td>−1.3%</td>
         </tr>
         <tr>
-          <td class="l">クイック 5段PL</td><td class="hl">0.225 W</td><td class="hl">1.986 ms</td>
-          <td>0.225×1.986 = <strong class="hl">0.447 mJ</strong></td><td class="hl"><strong>−51%</strong></td>
+          <td class="l">クイック 5段PL</td><td class="hlo">0.475 W</td><td class="hl">1.986 ms</td>
+          <td>0.475×1.986 = <strong>0.943 mJ</strong></td><td>+3%</td>
         </tr>
       </tbody>
     </table>
@@ -690,13 +690,13 @@ td.l { text-align: left; }
       </div>
       <div class="br">
         <div class="bl">5段 パイプライン</div>
-        <div class="bt"><div class="bf" style="width:49%;background:#27ae60;">0.447 mJ</div></div>
-        <div class="bv" style="color:#27ae60;">−51%</div>
+        <div class="bt"><div class="bf" style="width:100%;background:#d35400;">0.943 mJ</div></div>
+        <div class="bv" style="color:#d35400;">+3%</div>
       </div>
     </div>
     <div class="q" style="margin-top:10px;font-size:13px;">
       <strong>2段PL</strong>：電力増加（+22%）と時間短縮（−19%）が相殺 → ほぼ同等（−1.3%）<br>
-      <strong>5段PL</strong>：メモリ削減による電力低下（−41%）と時間短縮（−16%）が重なり → <strong>約51%削減</strong>
+      <strong>5段PL</strong>：電力増加（+24%）と時間短縮（−16%）がほぼ相殺 → <strong>逐次比ほぼ同等（+3%）</strong>
     </div>
   </div>
   <div class="pn">11 / 14</div>
@@ -721,14 +721,15 @@ td.l { text-align: left; }
       </div>
       <div>
         <h3>消費電力量の改善</h3>
-        <div class="card g" style="font-size:13px;">
-          5段PLはメモリサイズを 32kW → 2kW（1/16）に削減したことで，消費電力が 0.384 → 0.225 W（−41%）と大幅低下．<br><br>
-          消費電力量（P×T）は逐次比で<strong>約51%削減</strong>（0.912 → 0.447 mJ）．<br><br>
-          2段PLは電力増加と時間短縮が相殺し，ほぼ変わらず（−1.3%）．
+        <div class="card" style="font-size:13px;">
+          5段PLは動作周波数向上・パイプラインレジスタ増加により消費電力が 0.384 → 0.475 W（+24%）と増加．<br><br>
+          消費電力量（P×T）は逐次比で<strong>ほぼ同等（+3%）</strong>（0.912 → 0.943 mJ）．<br>
+          電力増加（+24%）と実行時間短縮（−16%）がほぼ相殺された．<br><br>
+          2段PLも電力増加と時間短縮が相殺し，ほぼ変わらず（−1.3%）．
         </div>
-        <div class="card" style="font-size:12px;margin-top:8px;">
-          <div class="ct">注意点</div>
-          5段PLのエネルギ改善は，パイプライン化自体の効果より<em>メモリ削減の効果が支配的</em>であった点に注意が必要
+        <div class="card y" style="font-size:12px;margin-top:8px;">
+          <div class="ct">考察ポイント</div>
+          パイプライン化による高周波化は電力増加を招き，実行時間短縮と相殺されるため<em>消費電力量の改善は限定的</em>
         </div>
       </div>
     </div>
@@ -743,8 +744,8 @@ td.l { text-align: left; }
     <ul style="font-size:15px;line-height:2.3;">
       <li>クイックソートは選択ソートに比べ実行命令数が約29倍少なく，パイプライン化の対象アルゴリズムとして採用</li>
       <li><strong>2段パイプライン</strong>：実行時間を約20%短縮（2.376 ms → 1.914 ms，<strong>1.24×高速化</strong>）</li>
-      <li><strong>5段パイプライン</strong>：消費電力量を約51%削減（0.912 mJ → <strong>0.447 mJ</strong>）</li>
-      <li><strong>5段パイプライン</strong>：LUT使用率を 29.90% → <strong>3.65%</strong> に大幅削減（メモリサイズ縮小が主因）</li>
+      <li><strong>5段パイプライン</strong>：消費電力量は逐次比でほぼ同等（0.912 mJ → <strong>0.943 mJ</strong>，+3%）</li>
+      <li><strong>5段パイプライン</strong>：LUT使用率は逐次・2段PLと同等（約30%），レジスタ数はパイプライン化で増加（64 → 693）</li>
       <li>パイプライン化は <em>周波数向上（高速化）</em> と <em>CPI増加（効率低下）</em> のトレードオフを伴う</li>
       <li>目的・用途に応じて<strong>アルゴリズムとアーキテクチャを適切に選択すること</strong>が重要</li>
     </ul>
