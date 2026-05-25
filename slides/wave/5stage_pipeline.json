@@ -1,0 +1,12 @@
+{
+  "config": { "hscale": 1 },
+  "head": { "tick": 1 },
+  "signal": [
+    { "name": "CLK",  "wave": "P........" },
+    { "name": "命令1", "wave": "23456zzzz", "data": ["IF", "ID", "EX", "MEM", "WB"] },
+    { "name": "命令2", "wave": "z23456zzz", "data": ["IF", "ID", "EX", "MEM", "WB"] },
+    { "name": "命令3", "wave": "zz23456zz", "data": ["IF", "ID", "EX", "MEM", "WB"] },
+    { "name": "命令4", "wave": "zzz23456z", "data": ["IF", "ID", "EX", "MEM", "WB"] },
+    { "name": "命令5", "wave": "zzzz23456", "data": ["IF", "ID", "EX", "MEM", "WB"] }
+  ]
+}
