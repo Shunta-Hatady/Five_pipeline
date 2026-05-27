@@ -1,0 +1,8 @@
+{
+  "config": { "hscale": 1.5 },
+  "head": { "tick": 1 },
+  "signal": [
+    { "name": "", "wave": "z23456z", "data": ["IF", "ID", "EX", "MEM", "WB"] }
+
+  ]
+}
