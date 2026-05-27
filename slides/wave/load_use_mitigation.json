@@ -1,0 +1,9 @@
+{
+  "config": { "hscale": 1.5 },
+  "signal": [
+    { "name": "CLK",  "wave": "P......" },
+    { "name": "LW a0,0(a1)", "wave": "23456zz", "data": ["IF", "ID", "EX", "MEM", "WB"] },
+    { "name": "ADD a2,a0", "wave": "z238456", "data": ["IF", "ID", "STALL","EX", "MEM", "WB"] }
+
+  ]
+}

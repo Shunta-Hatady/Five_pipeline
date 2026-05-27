@@ -1,0 +1,11 @@
+{
+  "config": { "hscale": 1 },
+  "head": { "tick": 1 },
+  "signal": [
+    { "name": "CLK",  "wave": "P......." },
+    { "name": "分岐命令", "wave": "23456zzz", "data": ["IF", "ID", "EX", "MEM", "WB"] },
+    { "name": "後続命令1", "wave": "z29zzzzz", "data": ["IF", "NOP"] },
+    { "name": "後続命令2", "wave": "zz9zzzzz", "data": ["NOP"] }
+
+  ]
+}
